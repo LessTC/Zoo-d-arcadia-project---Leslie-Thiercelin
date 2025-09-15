@@ -1,0 +1,354 @@
+/* ==============================
+   CHARTE (variables globales)
+   ============================== */
+:root {
+  /* Couleurs principales */
+  --green-dark: #556b2f;
+  --green-laurel: #6b8e23;
+  --cream: #fafae6;
+
+  --gray-light: #d3d3d3;
+  --gray: #808080;
+
+  --orange-peru: #cd853f;
+  --orange-red: #ff4500;
+  --brown-saddle: #8b4513;
+
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --hover: #ffd8c9;
+
+  /* Polices */
+  --font-title: "Inknut Antiqua", serif;
+  --font-body: "Averia Sans Libre", sans-serif;
+
+  /* Rayons & ombres */
+  --radius: 12px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ==============================
+   BASE & TYPO
+   ============================== */
+body {
+  margin: 0;
+  line-height: 1.6;
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background: var(--cream);
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--font-title);
+  color: var(--green-dark);
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ==============================
+   NAVBAR (commune)
+   ============================== */
+.navbar {
+  background: var(--green-dark);
+  min-height: 64px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.navbar .navbar-brand {
+  color: var(--text-light);
+  font-family: var(--font-title);
+  font-weight: 600;
+}
+.navbar .nav-link {
+  color: var(--text-light);
+}
+.navbar .navbar-brand:hover,
+.navbar .nav-link:hover {
+  color: var(--hover);
+}
+
+/* Burger */
+.navbar .navbar-toggler {
+  border: 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  transition: background-color 0.2s ease, transform 0.05s ease;
+}
+.navbar .navbar-toggler:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+.navbar .navbar-toggler:active {
+  transform: scale(0.96);
+}
+.navbar .navbar-toggler:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.navbar .navbar-toggler-icon {
+  width: 28px;
+  height: 22px;
+  background-size: 28px 22px;
+  background-image: url('data:image/svg+xml;utf8,\
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 22">\
+<path d="M3 2.5H27 M3 11H27 M3 19.5H27" stroke="rgba(255,255,255,0.96)" stroke-width="2.8" stroke-linecap="round"/></svg>');
+}
+
+/* ==============================
+   CARTES / PANNEAUX / BOUTONS
+   ============================== */
+.card,
+.panel {
+  background: var(--cream);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  border: 0; /* harmonisation */
+}
+.panel-red {
+  background: rgba(255, 69, 0, 0.85);
+  color: var(--text-light);
+}
+.panel-green {
+  background: rgba(85, 107, 47, 0.85);
+  color: var(--text-light);
+}
+
+.btn-brand {
+  background: var(--orange-red);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.btn-brand:hover {
+  background: var(--brown-saddle);
+  color: var(--text-light);
+}
+
+/* ==============================
+   AVATARS & IMAGES
+   ============================== */
+.avatar-40,
+.avatar-64,
+.avatar-128 {
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-40 {
+  width: 40px;
+  height: 40px;
+}
+.avatar-64 {
+  width: 64px;
+  height: 64px;
+}
+.avatar-128 {
+  width: 128px;
+  height: 128px;
+}
+
+.square-200 {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* ==============================
+   BLOCS INTRO (lisibilité sur fond)
+   ============================== */
+.intro-savane,
+.intro-jungle,
+.intro-marais {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+}
+
+/* ==============================
+   FONDS DÉGRADÉS PAR HABITAT
+   ============================== */
+.bg-savane {
+  background: linear-gradient(
+    180deg,
+    #e9edcf 0%,
+    #b6c17a 35%,
+    #8ca24d 70%,
+    #6c8430 100%
+  );
+  min-height: 100vh;
+}
+.bg-jungle {
+  background: linear-gradient(
+    180deg,
+    #d86a5b 0%,
+    #b45146 45%,
+    #8e3f33 75%,
+    #6b2e26 100%
+  );
+  min-height: 100vh;
+}
+.bg-marais {
+  background: linear-gradient(
+    180deg,
+    #4f7a87 0%,
+    #5f9378 45%,
+    #76a96b 75%,
+    #8ebc64 100%
+  );
+  min-height: 100vh;
+}
+
+/* ==============================
+   PAGE CONNEXION
+   ============================== */
+.bg-connexion {
+  position: relative;
+  min-height: 100vh;
+  background: url("images/janis-wolf-bv-tghd7_F4-unsplash.jpg") center/cover
+    no-repeat fixed;
+}
+.bg-connexion::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
+}
+.bg-connexion > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-login {
+  border: 0;
+  border-radius: 16px;
+  background: rgba(153, 77, 69, 0.85);
+  color: #fff;
+}
+.card-login .form-label {
+  color: #fff;
+}
+.card-login .form-control {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ==============================
+   FOOTER
+   ============================== */
+footer {
+  background: var(--green-dark);
+  color: var(--text-light);
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Page Contact : fond image + overlay (comme Connexion) */
+.bg-contact {
+  position: relative;
+  min-height: 100vh;
+  background: url("images/nikolay-tchaouchev-ttpNCevA1tA-unsplash.jpg")
+    center/cover no-repeat fixed;
+}
+.bg-contact::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.38));
+}
+.bg-contact > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Carte du formulaire de contact (vert translucide) */
+.card-contact {
+  border: 0;
+  border-radius: 16px;
+  background: rgba(85, 107, 47, 0.85); /* vert olive translucide */
+  color: #fff;
+}
+.card-contact .form-label {
+  color: #fff;
+}
+.card-contact .form-control {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+/* Hero des services (image + overlay léger) */
+.bg-services {
+  position: relative;
+  min-height: 220px; /* hauteur hero */
+  background: url("images/steve-payne-ygYxOk1PKcU-unsplash.jpg") center/cover
+    no-repeat;
+}
+.bg-services::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15));
+}
+.bg-services .hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/** espace admin **/
+
+/* Mise en hauteur douce de la zone principale du dashboard */
+.admin-layout { background: #FAFAE6; }
+
+/* Harmonise les cartes de tableau de bord */
+.card h2, .card h3 { color: var(--green-dark); }
+
+/* Fond général de l’espace Admin */
+.admin-layout {
+  background: #8e3f33; /* brun-rouge */
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Harmonise les cartes sur fond sombre */
+.admin-layout .card {
+  background: #fff;  /* cartes claires pour contraster */
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Fond général du dashboard vétérinaire */
+.vet-layout {
+  background: #35887E;
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Harmonisation cartes */
+.vet-layout .card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Fond général du dashboard Employé */
+.employe-layout {
+  background: #556B2F; /* vert olive foncé */
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Harmonisation cartes */
+.employe-layout .card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}

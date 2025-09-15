@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Zoo d’Arcadia en Bretagne. Approche pédagogique et sensibilisation au bien-être animal.">
+  <title>Zoo d’Arcadia — Accueil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@400;600;700&family=Averia+Sans+Libre:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+
+  <!--Style de l'overlay pour l'image du hero-->
+  <style>
+    .hero {
+      position: relative;
+      background: url("images/matthew-cabret-ub1sSvJ_Tbs-unsplash.jpg") center/cover no-repeat;
+      color: var(--text-light);
+      min-height: 440px;
+      display: flex;
+      align-items: center;
+    }
+    .hero::after { content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.25)); }
+    .hero .content { position: relative; z-index: 1; }
+  </style>
+</head>
+
+
+<body>
+
+  <header>
+    <nav class="navbar" style="background: var(--green-dark);" data-bs-theme="dark">
+      <div class="container d-flex align-items-center justify-content-between">
+  
+        <!--Titre -->
+        <a class="navbar-brand m-0 text-white fw-semibold" href="/" style="font-family: var(--font-title);">
+          ZOO D’ARCADIA
+        </a>
+  
+        <!--Connexion-->
+        <div class="d-flex align-items-center gap-2">
+          <a href= "Connexion.html" class="nav-link" aria-label="Connexion utilisateur">
+            <i class="bi bi-person-circle text-white fs-3"></i>
+          </a>
+          
+        <!--Menu Burger -->
+            <button class="navbar-toggler" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#nav"
+                  aria-controls="nav" aria-expanded="false" aria-label="Menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Menu plié -->
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#decouvrir">
+              Découvrir
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#infos">
+              Infos
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link text-white" href="#contact">
+            Contact
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+    
+<!--Image et premiere partie-->
+  <section class="hero">
+    <div class="container content py-5">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <h1 class="mb-3" style="font-family: var(--font-title); color: var(--text-light);">
+            Arcadia, un zoo à l’écoute de la nature.
+          </h1>
+          <div class="panel panel-green mb-3" style="background: rgba(85,107,47,.85);">
+            <p class="mb-2">
+              Arcadia est un zoo situé en Bretagne, à proximité de la forêt de Brocéliande. Créé en 1960, le zoo
+              présente une grande diversité d’animaux, répartis par habitat (savane, jungle, marais). Venez à leur rencontre !
+            </p>
+            <p class="mb-0">
+              Le soin porté à chaque animal est primordial: chaque jour, plusieurs vétérinaires effectuent des
+              contrôles et l’alimentation est préparée par nos soigneurs avant l’ouverture.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bloc “infos pratiques”-->
+        <div class="col-lg-4">
+          <div class="panel panel-red rounded-4 p-3 shadow" style="background: rgba(255,69,0,.5);">
+            <h2 class="h5 mb-3 text-white" style="font-family: var(--font-title);">Infos pratiques</h2>
+            <div class="text-white">
+              <div class="mb-2">
+                <strong>Adresse</strong>
+                <br> 
+                Rue de Brocéliance, 56000 Bretagne
+              </div>
+              <div class="mb-2">
+                <strong>Ouverture</strong>
+                <br> 
+                Lundi – Samedi • 9h–19h</div>
+              <a href="contact.html" class="btn btn-light btn-sm mt-1">Contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Titre Découvrir -->
+  <main id="content">
+    <section id="decouvrir" class="py-5">
+      <div class="container">
+        <h2 class="mb-4" style="font-family: var(--font-title); color: var(--green-dark);">
+          Venez découvrir nos incroyables pensionnaires !
+        </h2>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+          <!-- Marais -->
+          <div class="col">
+            <img src="images/gary-yost-b2iauwRsxOM-unsplash.jpg" class="avatar-128 img-fluid" alt="Crocodile au repos dans l’eau">
+            <h3 class="h6 mt-3" style="font-family: var(--font-title); color: var(--text-dark);">
+              <a class="text-decoration-none" href="marais.html">Les marais exotiques</a>
+            </h3>
+          </div>
+
+          <!-- Jungle -->
+          <div class="col">
+            <img src="images/joshua-j-cotten-dJTmBXaNdxY-unsplash.jpg" class="avatar-128 img-fluid" alt="Bébé singe blotti contre sa mère">
+            <h3 class="h6 mt-3" style="font-family: var(--font-title); color: var(--text-dark);">
+              <a class="text-decoration-none" href="jungle.html">La jungle tropicale</a>
+            </h3>
+          </div>
+
+          <!-- Savane -->
+          <div class="col">
+            <img src="images/jaliya-rasaputra-U_eZSoRUMQM-unsplash.jpg" class="avatar-128 img-fluid" alt="Lionne">
+            <h3 class="h6 mt-3" style="font-family: var(--font-title); color: var(--text-dark);">
+              <a class="text-decoration-none" href="savane.html">La savane sauvage</a>
+            </h3>
+          </div>
+        </div>
+
+        <!-- Lien “expériences” -->
+        <div class="mt-5 panel panel-green p-3 rounded-4" style="background: rgba(85,107,47,.85);">
+          <p class="mb-2 text-white">
+            Et profitez des expériences proposées par notre équipe !
+          </p>
+          <ul class="mb-0">
+            <li><a class="text-white" href="Services.html#visite-guidee">Visites guidées</a></li>
+            <li><a class="text-white" href="Services.html#restauration">Restauration</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Avis + Infos -->
+    <section id="infos" class="py-5">
+      <div class="container">
+        <div class="row g-4">
+
+          <!-- Bloc Avis -->
+          <div class="col-12 col-lg-6">
+            <div class="card shadow" style="background: #E3E6C4;">
+              <h2 class="h5 mb-3" style="font-family: var(--font-title); color: var(--green-dark);">Avis</h2>
+              <div class="small text-muted">“Le zoo est fantastique et l’équipe à l’écoute !” — A., juin 2024</div>
+              <hr>
+              <div class="small text-muted">“Très belle découverte !” — M., mai 2024</div>
+              <a href="#" class="btn btn-brand btn-sm mt-3">Laissez votre commentaire</a>
+            </div>
+          </div>
+
+          <!-- Infos pratiques -->
+          <div class="col-12 col-lg-6" id="contact">
+            <div class="card h-100">
+              <h2 class="h5 mb-3" style="font-family: var(--font-title); color: var(--green-dark);">Nous écrire</h2>
+              <form action="/contact" method="post" novalidate>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="name" class="form-label">Nom</label>
+                    <input id="name" name="name" type="text" class="form-control" autocomplete="name" required>
+                  </div>
+                  <div class="col-12">
+                    <label for="mail" class="form-label">E-mail</label>
+                    <input id="mail" name="email" type="email" class="form-control" autocomplete="email" required>
+                  </div>
+                  <div class="col-12">
+                    <label for="subject" class="form-label">Sujet</label>
+                    <input id="subject" name="subject" type="text" class="form-control" required>
+                  </div>
+                  <div class="col-12">
+                    <label for="message" class="form-label">Votre message</label>
+                    <textarea id="message" name="message" rows="5" class="form-control" placeholder="Écrivez votre message…" required></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-brand">Envoyer</button>
+                    <!-- Ajouter le backend pour envoyer les messages sur la messagerie Dashboard admin-->
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © <span id="year"></span> Zoo d’Arcadia — Tous droits réservés
+  </footer>
+
+  <!-- JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

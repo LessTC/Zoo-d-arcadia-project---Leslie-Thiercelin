@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Services — Zoo d’Arcadia</title>
+  <meta name="description" content="Découvrez les services proposés par le Zoo d’Arcadia : visites guidées, petit train, restauration.">
+
+  <!-- Style -->
+  <link href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@400;600;700&family=Averia+Sans+Libre:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar" data-bs-theme="dark">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand m-0 fw-semibold" href="index.html">ZOO D’ARCADIA</a>
+        <div class="d-flex align-items-center gap-2">
+          <a href="Connexion.html" class="nav-link p-0" aria-label="Connexion utilisateur">
+            <i class="bi bi-person-circle text-white fs-3"></i>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+                  aria-controls="nav" aria-expanded="false" aria-label="Menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+      </div>
+      <div id="nav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html#decouvrir">Découvrir</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#infos">Infos</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-services d-flex align-items-center">
+    <div class="container hero-content py-5">
+      <h1 class="text-white mb-0">Nos services</h1>
+    </div>
+  </section>
+
+  <main class="py-5">
+    <div class="container">
+
+      <!-- Visites -->
+      <section class="mb-5">
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+          <div class="col">
+            <article class="card h-100 p-4">
+              <h2 class="h4 mb-2" id="visite-guidee" >Visite guidée (gratuit)</h2>
+              <p class="mb-3">Profitez de l’expérience de nos guides pour découvrir les secrets de nos animaux.</p>
+              <img src="images/steve-payne-ygYxOk1PKcU-unsplash.jpg"
+                   class="img-fluid rounded" alt="Panda roux nourri par un guide">
+            </article>
+          </div>
+
+          <div class="col">
+            <article class="card h-100 p-4">
+              <h2 class="h4 mb-2">Visite en petit train</h2>
+              <p class="mb-3">Le petit train permet une visite en toute tranquillité de l’ensemble du parc.</p>
+              <img src="images/dusan-veverkolog-of8koAjYI7c-unsplash.jpg"
+                   class="img-fluid rounded" alt="Petit train du zoo">
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Restauration -->
+      <section>
+        <article class="card p-4">
+          <h2 class="h4 mb-2" id="restauration">Restauration</h2>
+          <p class="mb-4">
+            Le parc propose un service de restauration rapide (sucré/salé) toute la journée,
+            ainsi qu’un restaurant entre 11h et 14h.
+          </p>
+
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+              <img src="images/joseph-gonzalez-zcUgjyqEwe8-unsplash.jpg"
+                   class="img-fluid rounded" alt="Pancakes aux fruits">
+            </div>
+            <div class="col">
+              <img src="images/eaters-collective-12eHC6FxPyg-unsplash.jpg"
+                   class="img-fluid rounded" alt="Pâtes aux légumes">
+            </div>
+          </div>
+        </article>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-3 text-center text-white" style="background:#455a26;">
+    © <span id="year"></span> Zoo d’Arcadia — Tous droits réservés
+  </footer>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
