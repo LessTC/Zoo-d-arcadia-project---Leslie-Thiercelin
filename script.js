@@ -6,85 +6,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 2) Validation simple des formulaires de contact/connexion
+// 2) Simulation d'envoi — uniquement pour les formulaires pas encore
+// branchés au serveur, reconnaissables à leur attribut action vide ou "#".
+// Les formulaires réellement traités en PHP ont une action pointant vers
+// une page : on les laisse partir normalement.
 document.addEventListener("submit", (e) => {
   const form = e.target;
+  if (!form.matches("form")) return;
 
-  if (form.matches("form")) {
-    // Vérifie que tous les champs requis sont remplis
-    if (!form.checkValidity()) {
-      e.preventDefault();
-      alert("Merci de remplir tous les champs obligatoires.");
-      return;
-    }
+  const action = form.getAttribute("action");
+  const estUneMaquette = !action || action === "#";
 
-    // Message de confirmation (pas d'envoi réel pour le moment)
-    e.preventDefault();
-    alert("Formulaire envoyé (simulation).");
-    form.reset();
+  if (!estUneMaquette) {
+    return; // vrai formulaire : PHP prend le relais
   }
-});
-
-// 3) Gestion des avis (Dashboard employé)
-// Valider / invalider un avis visuellement
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-
-  // Ligne de tableau concernée
-  const row = btn.closest("tr");
-  if (!row) return;
-
-  // Si c'est un bouton "valider"
-  if (btn.classList.contains("btn-success")) {
-    row.classList.add("table-success");
-    row.classList.remove("table-danger");
-    row.dataset.status = "valide";
-  }
-
-  // Si c'est un bouton "invalider"
-  if (btn.classList.contains("btn-danger")) {
-    row.classList.add("table-danger");
-    row.classList.remove("table-success");
-    row.dataset.status = "invalide";
-  }
-});
-
-// 4) Filtrer les comptes rendus (Dashboard admin / vétérinaire)
-document.addEventListener("submit", (e) => {
-  if (!e.target.closest("#filterAnimal") && !e.target.closest("#filterFrom")) return;
 
   e.preventDefault();
 
-  const animal = document.querySelector("#filterAnimal")?.value.toLowerCase();
-  const from = document.querySelector("#filterFrom")?.value;
-  const to = document.querySelector("#filterTo")?.value;
+  if (!form.checkValidity()) {
+    alert("Merci de remplir tous les champs obligatoires.");
+    return;
+  }
 
-  const rows = document.querySelectorAll("table tbody tr");
-  rows.forEach((row) => {
-    const date = row.cells[0]?.textContent.trim();
-    const nomAnimal = row.cells[1]?.textContent.toLowerCase();
-
-    let visible = true;
-
-    if (animal && !nomAnimal.includes(animal)) {
-      visible = false;
-    }
-
-    if (from && date < from) {
-      visible = false;
-    }
-
-    if (to && date > to) {
-      visible = false;
-    }
-
-    row.style.display = visible ? "" : "none";
-  });
+  alert("Formulaire envoyé (simulation).");
+  form.reset();
 });
 
 // 5) Ajout simple d’alimentation (Dashboard employé)
-// Ajouter une ligne dans le tableau après soumission
 document.addEventListener("submit", (e) => {
   if (!e.target.matches("#form-alimentation")) return;
 

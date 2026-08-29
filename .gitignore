@@ -1,0 +1,25 @@
+# Configuration locale : contient les identifiants de connexion à la base.
+# Le modèle à copier est config/config.exemple.php, lui versionné.
+/config/config.php
+
+# Ancienne version statique et images non optimisées (74 Mo).
+# Les fichiers .html d'origine sont déjà dans l'historique Git, sur la
+# branche main : ce dossier n'apporte rien et alourdirait le dépôt.
+/_OLD/
+
+# Courriels journalisés en local (voir includes/courriel.php)
+/courriels/
+
+# Sauvegardes et exports de base de données
+/sql/sauvegarde*.sql
+/sql/export*.sql
+
+# Fichiers générés par les éditeurs et le système
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+*.code-workspace
+
+# Dépendances éventuelles
+/vendor/
