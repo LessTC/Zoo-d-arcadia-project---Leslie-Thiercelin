@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
 require __DIR__ . '/includes/courriel.php';
+require __DIR__ . '/includes/messages_contact.php';
 
 // LA BARRIÈRE. Première instruction exécutable de la page, avant le
 // moindre affichage : si la personne n'est pas un administrateur
@@ -153,29 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    if ($action === 'message_lu') {
-        $id = (int) ($_POST['message_id'] ?? 0);
-    
-        if ($id > 0) {
-            $requete = db()->prepare('UPDATE contact_messages SET is_read = NOT is_read WHERE id = ?');
-            $requete->execute([$id]);
-        }
-    
-        header('Location: Dashboard_admin.php?onglet=messages');
-        exit;
-    }
-    
-    if ($action === 'message_suppr') {
-        $id = (int) ($_POST['message_id'] ?? 0);
-    
-        if ($id > 0) {
-            $requete = db()->prepare('DELETE FROM contact_messages WHERE id = ?');
-            $requete->execute([$id]);
-        }
-    
-        header('Location: Dashboard_admin.php?onglet=messages&message=supprime');
-        exit;
-    }
+    // Boîte de réception partagée avec l'espace employé : le traitement
+    // vit dans includes/messages_contact.php.
+    traiter_action_message('Dashboard_admin.php');
 
     if ($action === 'animal_enregistrer') {
         $id          = (int) ($_POST['animal_id'] ?? 0);
@@ -364,13 +345,9 @@ $rapports = $requete->fetchAll();
 
 // --- Messages du formulaire de contact -------------------------------
 // Les non-lus remontent en premier, puis les plus récents.
-$messagesContact = db()->query(
-    'SELECT id, email, phone, subject, message, is_read, created_at
-     FROM contact_messages
-     ORDER BY is_read ASC, created_at DESC'
-)->fetchAll();
-
-$nonLus = count(array_filter($messagesContact, fn($m) => !$m['is_read']));
+$messagesContact = messages_contact();
+$nonLus          = messages_non_lus($messagesContact);
+$pageCourante    = 'Dashboard_admin.php';
 
 // --- Contenu du zoo : animaux ----------------------------------------
 $tousLesAnimaux = db()->query(
@@ -993,63 +970,7 @@ require __DIR__ . '/includes/header.php';
 
             <!-- ==== MESSAGES DE CONTACT ==== -->
             <div class="tab-pane fade<?= $ongletActif === 'messages' ? ' show active' : '' ?>" id="pane-messages" role="tabpanel" aria-labelledby="tab-messages">
-              <div class="card p-4">
-                <h2 class="h5 mb-3">
-                  Messages reçus
-                  <?php if ($nonLus > 0): ?>
-                    <span class="badge bg-danger ms-2"><?= (int) $nonLus ?> non lu<?= $nonLus > 1 ? 's' : '' ?></span>
-                  <?php endif; ?>
-                </h2>
-            
-                <?php if (isset($_GET['message'])): ?>
-                  <div class="alert alert-secondary" role="alert">Message supprimé.</div>
-                <?php endif; ?>
-            
-                <?php if (!$messagesContact): ?>
-                  <p class="mb-0 text-muted">Aucun message pour le moment.</p>
-                <?php endif; ?>
-            
-                <?php foreach ($messagesContact as $index => $unMessage): ?>
-                  <?php if ($index > 0): ?><hr><?php endif; ?>
-            
-                  <div class="<?= $unMessage['is_read'] ? 'opacity-75' : '' ?>">
-                    <div class="d-flex justify-content-between align-items-start gap-2">
-                      <div>
-                        <strong><?= e($unMessage['subject']) ?></strong>
-                        <?php if (!$unMessage['is_read']): ?>
-                          <span class="badge bg-danger ms-1">nouveau</span>
-                        <?php endif; ?>
-                        <div class="small text-muted">
-                          <?= e($unMessage['email']) ?>
-                          <?php if ($unMessage['phone']): ?> · <?= e($unMessage['phone']) ?><?php endif; ?>
-                          · <?= e(date('d/m/Y H:i', strtotime($unMessage['created_at']))) ?>
-                        </div>
-                      </div>
-            
-                      <div class="text-nowrap">
-                        <form action="Dashboard_admin.php" method="post" class="d-inline">
-                          <input type="hidden" name="message_id" value="<?= (int) $unMessage['id'] ?>">
-                          <button class="btn btn-outline-secondary btn-sm" type="submit"
-                                  name="action" value="message_lu"
-                                  title="<?= $unMessage['is_read'] ? 'Marquer comme non lu' : 'Marquer comme lu' ?>">
-                            <i class="bi bi-<?= $unMessage['is_read'] ? 'envelope' : 'envelope-open' ?>"></i>
-                          </button>
-                        </form>
-                        <form action="Dashboard_admin.php" method="post" class="d-inline"
-                              onsubmit="return confirm('Supprimer ce message ?');">
-                          <input type="hidden" name="message_id" value="<?= (int) $unMessage['id'] ?>">
-                          <button class="btn btn-outline-danger btn-sm" type="submit"
-                                  name="action" value="message_suppr" title="Supprimer">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-            
-                    <p class="small mb-0 mt-2"><?= nl2br(e($unMessage['message'])) ?></p>
-                  </div>
-                <?php endforeach; ?>
-              </div>
+              <?php require __DIR__ . '/includes/panneau_messages.php'; ?>
             </div>
 
           </div><!-- div qui ferme le /tab-content -->
