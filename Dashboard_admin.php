@@ -284,20 +284,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if ($action === 'habitat_maj') {
+    // US 6 : « création, mise à jour et suppression » des habitats.
+    // Un seul traitement pour la création et la mise à jour : c'est la
+    // présence d'un identifiant qui distingue les deux cas, exactement
+    // comme pour les services et les animaux plus haut.
+    if ($action === 'habitat_enregistrer') {
         $id          = (int) ($_POST['habitat_id'] ?? 0);
+        $nom         = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $image       = trim($_POST['image'] ?? '');
-    
-        if ($id > 0) {
-            $requete = db()->prepare('UPDATE habitats SET description = ?, image = ? WHERE id = ?');
-            $requete->execute([$description, $image !== '' ? $image : null, $id]);
-    
-            header('Location: Dashboard_admin.php?onglet=content&habitat_id=' . $id . '&habitat=ok');
+
+        if ($nom === '') {
+            header('Location: Dashboard_admin.php?onglet=content&habitat=invalide');
             exit;
         }
-    
-        header('Location: Dashboard_admin.php?onglet=content&habitat=erreur');
+
+        // La table impose un nom unique (UNIQUE KEY uq_habitats_name). Plutôt
+        // que de laisser MySQL lever une exception que l'administrateur ne
+        // comprendrait pas, on vérifie nous-mêmes et on affiche un message
+        // clair. Le « id <> ? » exclut l'habitat en cours de modification,
+        // qui a évidemment le droit de conserver son propre nom.
+        $requete = db()->prepare('SELECT id FROM habitats WHERE name = ? AND id <> ?');
+        $requete->execute([$nom, $id]);
+
+        if ($requete->fetch()) {
+            header('Location: Dashboard_admin.php?onglet=content&habitat=doublon');
+            exit;
+        }
+
+        if ($id > 0) {
+            $requete = db()->prepare(
+                'UPDATE habitats SET name = ?, description = ?, image = ? WHERE id = ?'
+            );
+            $requete->execute([$nom, $description, $image !== '' ? $image : null, $id]);
+
+            header('Location: Dashboard_admin.php?onglet=content&habitat_id=' . $id . '&habitat=modifie');
+            exit;
+        }
+
+        $requete = db()->prepare(
+            'INSERT INTO habitats (name, description, image) VALUES (?, ?, ?)'
+        );
+        $requete->execute([$nom, $description, $image !== '' ? $image : null]);
+
+        header('Location: Dashboard_admin.php?onglet=content&habitat_id=' . db()->lastInsertId() . '&habitat=cree');
+        exit;
+    }
+
+    if ($action === 'habitat_supprimer') {
+        $id = (int) ($_POST['habitat_id'] ?? 0);
+
+        if ($id > 0) {
+            // La clé étrangère des animaux est en ON DELETE CASCADE : supprimer
+            // un habitat peuplé effacerait au passage ses animaux, leurs comptes
+            // rendus vétérinaires et leurs repas — le tout sur un seul clic.
+            // On refuse donc tant qu'il reste un animal, et on demande à
+            // l'administrateur de les déplacer ou de les supprimer d'abord.
+            // Le garde-fou est côté serveur : une confirmation JavaScript se
+            // contourne, pas une vérification en base.
+            $requete = db()->prepare('SELECT COUNT(*) FROM animals WHERE habitat_id = ?');
+            $requete->execute([$id]);
+
+            if ((int) $requete->fetchColumn() > 0) {
+                header('Location: Dashboard_admin.php?onglet=content&habitat_id=' . $id . '&habitat=peuple');
+                exit;
+            }
+
+            $requete = db()->prepare('DELETE FROM habitats WHERE id = ?');
+            $requete->execute([$id]);
+        }
+
+        header('Location: Dashboard_admin.php?onglet=content&habitat=supprime');
         exit;
     }
 }
@@ -392,6 +449,11 @@ if ($idService > 0) {
 // --- Contenu du zoo : habitats ---------------------------------------
 $habitatEdite = null;
 $idHabitat    = (int) ($_GET['habitat_id'] ?? 0);
+
+// « habitat_id=0 » n'est pas une erreur : c'est l'entrée « Nouvel habitat »
+// de la liste déroulante. isset() permet de distinguer « le paramètre vaut
+// zéro » de « le paramètre est absent », ce que (int) seul ne sait pas faire.
+$nouvelHabitat = isset($_GET['habitat_id']) && $idHabitat === 0;
 
 if ($idHabitat > 0) {
     $requete = db()->prepare('SELECT id, name, description, image FROM habitats WHERE id = ?');
@@ -676,16 +738,28 @@ require __DIR__ . '/includes/header.php';
                     <h2 class="h5 mb-3">Habitats</h2>
 
                     <?php if (isset($_GET['habitat'])): ?>
-                      <div class="alert alert-<?= $_GET['habitat'] === 'ok' ? 'success' : 'danger' ?>" role="alert">
-                        <?= $_GET['habitat'] === 'ok' ? 'Habitat mis à jour.' : 'Habitat introuvable.' ?>
-                      </div>
+                      <?php
+                        $msgHabitat = [
+                          'cree'     => ['success',   'Habitat créé.'],
+                          'modifie'  => ['success',   'Habitat mis à jour.'],
+                          'supprime' => ['secondary', 'Habitat supprimé.'],
+                          'invalide' => ['danger',    'Le nom de l’habitat est obligatoire.'],
+                          'doublon'  => ['danger',    'Un habitat porte déjà ce nom.'],
+                          'peuple'   => ['danger',    'Cet habitat contient encore des animaux. Déplace-les vers un autre habitat, ou supprime-les, avant de supprimer l’habitat.'],
+                        ];
+                        [$couleurH, $texteH] = $msgHabitat[$_GET['habitat']] ?? ['secondary', ''];
+                      ?>
+                      <?php if ($texteH !== ''): ?>
+                        <div class="alert alert-<?= e($couleurH) ?>" role="alert"><?= e($texteH) ?></div>
+                      <?php endif; ?>
                     <?php endif; ?>
 
                     <form action="Dashboard_admin.php" method="get" class="row g-2 align-items-end mb-3">
                       <input type="hidden" name="onglet" value="content">
                       <div class="col-12 col-md-8">
-                        <label for="habitatChoix" class="form-label">Habitat à modifier</label>
+                        <label for="habitatChoix" class="form-label">Habitat</label>
                         <select id="habitatChoix" name="habitat_id" class="form-select">
+                          <option value="0" <?= $nouvelHabitat ? 'selected' : '' ?>>+ Nouvel habitat</option>
                           <?php foreach ($tousLesHabitats as $unHabitat): ?>
                             <option value="<?= (int) $unHabitat['id'] ?>"
                               <?= $habitatEdite && (int) $habitatEdite['id'] === (int) $unHabitat['id'] ? 'selected' : '' ?>>
@@ -699,40 +773,64 @@ require __DIR__ . '/includes/header.php';
                       </div>
                     </form>
 
-                    <?php if ($habitatEdite): ?>
+                    <?php if ($habitatEdite || $nouvelHabitat): ?>
+                      <h3 class="h6 mb-3">
+                        <?= $habitatEdite ? 'Modifier « ' . e($habitatEdite['name']) . ' »' : 'Créer un habitat' ?>
+                      </h3>
+
                       <form action="Dashboard_admin.php" method="post" class="row g-3">
-                        <input type="hidden" name="habitat_id" value="<?= (int) $habitatEdite['id'] ?>">
+                        <input type="hidden" name="habitat_id" value="<?= (int) ($habitatEdite['id'] ?? 0) ?>">
 
                         <div class="col-12">
-                          <label class="form-label">Nom</label>
-                          <input type="text" class="form-control" value="<?= e($habitatEdite['name']) ?>" disabled>
+                          <label for="habitatNom" class="form-label">Nom</label>
+                          <input id="habitatNom" name="name" type="text" class="form-control"
+                                 value="<?= e($habitatEdite['name'] ?? '') ?>"
+                                 maxlength="100" required>
                           <div class="form-text">
-                            Le nom n’est pas modifiable : il détermine le fond de page et les liens du site.
+                            Ce nom sert de titre à la page publique de l’habitat. S’il vaut
+                            « Savane », « Jungle » ou « Marais », la page reprend le dégradé
+                            prévu par la charte ; sinon elle utilise le fond vert par défaut.
                           </div>
                         </div>
 
                         <div class="col-12">
                           <label for="habitatDesc" class="form-label">Description</label>
                           <textarea id="habitatDesc" name="description" rows="3"
-                                    class="form-control"><?= e($habitatEdite['description']) ?></textarea>
+                                    class="form-control"><?= e($habitatEdite['description'] ?? '') ?></textarea>
                         </div>
 
                         <div class="col-12">
                           <label for="habitatImage" class="form-label">Image</label>
                           <input id="habitatImage" name="image" type="text" class="form-control"
-                                 value="<?= e($habitatEdite['image']) ?>"
+                                 value="<?= e($habitatEdite['image'] ?? '') ?>"
                                  placeholder="images/nom-du-fichier.jpg">
-                          <div class="form-text">Le fichier doit déjà se trouver dans le dossier <code>images/</code>.</div>
+                          <div class="form-text">
+                            Le fichier doit déjà se trouver dans le dossier <code>images/</code>.
+                            Sans image, l’habitat apparaît quand même dans la liste, avec son nom seul.
+                          </div>
                         </div>
 
                         <div class="col-12">
-                          <button class="btn btn-brand" type="submit" name="action" value="habitat_maj">
-                            Mettre à jour
+                          <button class="btn btn-brand" type="submit" name="action" value="habitat_enregistrer">
+                            <?= $habitatEdite ? 'Mettre à jour' : 'Créer l’habitat' ?>
                           </button>
                         </div>
                       </form>
+
+                      <?php if ($habitatEdite): ?>
+                        <!-- Formulaire séparé : un formulaire ne peut pas en contenir un autre.
+                             Le confirm() n'est qu'un filet de courtoisie, la vraie vérification
+                             (l'habitat est-il vide ?) se fait côté serveur. -->
+                        <form action="Dashboard_admin.php" method="post" class="mt-3"
+                              onsubmit="return confirm('Supprimer définitivement cet habitat ?');">
+                          <input type="hidden" name="habitat_id" value="<?= (int) $habitatEdite['id'] ?>">
+                          <button class="btn btn-outline-danger" type="submit" name="action" value="habitat_supprimer">
+                            Supprimer cet habitat
+                          </button>
+                        </form>
+                      <?php endif; ?>
                     <?php else: ?>
-                      <p class="text-muted mb-0">Choisis un habitat ci-dessus, puis clique sur « Charger ».</p>
+                      <p class="text-muted mb-0">Choisis un habitat ci-dessus, ou « + Nouvel habitat », puis clique sur « Charger ».</p>
                     <?php endif; ?>
                   </article>
                 </div>
