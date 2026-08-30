@@ -10,7 +10,7 @@ $animalId = (int) ($_GET['id'] ?? 0);
 
 $requete = db()->prepare(
     'SELECT a.id, a.name, a.species, a.description, a.diet, a.health_state,
-            a.image, a.image_alt, h.name AS habitat
+            a.image, a.image_alt, a.habitat_id, h.name AS habitat
      FROM animals a
      JOIN habitats h ON h.id = a.habitat_id
      WHERE a.id = ?'
@@ -46,7 +46,7 @@ $dernierRapport = $requete->fetch() ?: null;
 $titrePage       = $animal['name'] . ' — Zoo d’Arcadia';
 $descriptionPage = 'Fiche de ' . $animal['name'] . ', ' . $animal['species'] . ' au Zoo d’Arcadia.';
 // La fiche reprend le fond de son habitat : bg-savane, bg-jungle, bg-marais.
-$classeBody      = 'bg-' . strtolower($animal['habitat']);
+$classeBody      = 'bg-habitat bg-' . strtolower($animal['habitat']);
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -95,7 +95,7 @@ require __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <hr class="my-4">
-            <a href="<?= e(strtolower($animal['habitat'])) ?>.php" class="btn btn-brand">
+            <a href="habitat.php?id=<?= (int) $animal['habitat_id'] ?>" class="btn btn-brand">
               ← Retour à <?= e($animal['habitat']) ?>
             </a>
 
