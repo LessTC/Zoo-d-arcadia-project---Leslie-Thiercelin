@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
+require __DIR__ . '/includes/messages_contact.php';
 
 // LA BARRIÈRE. Première instruction exécutable de la page, avant le
 // moindre affichage : si la personne n'est pas un employé
@@ -102,7 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: Espace_soigneur.php?onglet=food&repas=erreur');
         exit;
     }
-    }
+
+    // Boîte de réception partagée avec l'espace administrateur : le
+    // traitement vit dans includes/messages_contact.php.
+    traiter_action_message('Espace_soigneur.php');
+}
 
 // Les avis en attente : ceux que personne n'a encore tranchés.
 $avisEnAttente = db()->query(
@@ -144,6 +149,13 @@ $historique = db()->query(
      LIMIT 20'
 )->fetchAll();
 
+// US 10 : « L'employé peut répondre à la demande directement par mail. »
+// La boîte de réception est partagée avec l'espace administrateur, qui
+// garde la supervision : le code vit dans includes/messages_contact.php.
+$messagesContact = messages_contact();
+$nonLus          = messages_non_lus($messagesContact);
+$pageCourante    = 'Espace_soigneur.php';
+
 // Onglet à ouvrir au chargement, transmis dans l'URL après chaque action.
 $ongletActif = $_GET['onglet'] ?? 'avis';
 
@@ -171,6 +183,12 @@ require __DIR__ . '/includes/header.php';
               </button>
               <button class="nav-link<?= $ongletActif === 'food' ? ' active' : '' ?>" id="tab-food" data-bs-toggle="pill" data-bs-target="#pane-food" type="button">
                 <i class="bi bi-basket me-1"></i> Alimentation
+              </button>
+              <button class="nav-link<?= $ongletActif === 'messages' ? ' active' : '' ?>" id="tab-messages" data-bs-toggle="pill" data-bs-target="#pane-messages" type="button">
+                <i class="bi bi-envelope me-1"></i> Messages
+                <?php if ($nonLus > 0): ?>
+                  <span class="badge bg-danger ms-1"><?= (int) $nonLus ?></span>
+                <?php endif; ?>
               </button>
             </div>
           </div>
@@ -398,6 +416,11 @@ require __DIR__ . '/includes/header.php';
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            <!-- ========== MESSAGES DE CONTACT ========== -->
+            <div class="tab-pane fade<?= $ongletActif === 'messages' ? ' show active' : '' ?>" id="pane-messages" role="tabpanel">
+              <?php require __DIR__ . '/includes/panneau_messages.php'; ?>
             </div>
 
           </div>

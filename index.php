@@ -44,6 +44,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// US 1 : l'accueil doit mentionner les animaux du zoo, pas seulement les
+// habitats. Une seule requête, rangée ensuite par habitat — plutôt qu'une
+// requête par carte, qui multiplierait les allers-retours vers la base.
+$animauxParHabitat = [];
+$lignes = db()->query(
+    'SELECT a.id, a.name, h.name AS habitat
+     FROM animals a
+     JOIN habitats h ON h.id = a.habitat_id
+     ORDER BY h.name, a.id'
+);
+foreach ($lignes as $ligne) {
+    $animauxParHabitat[$ligne['habitat']][] = $ligne;
+}
+
+// Nombre de noms affichés avant le repli. Au-delà, un bouton déplie le reste.
+$animauxVisibles = 3;
+
+// Les trois cartes de la section « Découvrir ». Le libellé et la photo sont
+// propres à la page d'accueil ; la clé « habitat » fait le lien avec la base.
+$cartesHabitats = [
+    [
+        'habitat' => 'Marais',
+        'titre'   => 'Les marais exotiques',
+        'page'    => 'marais.php',
+        'image'   => 'images/gary-yost-b2iauwRsxOM-unsplash.jpg',
+        'alt'     => 'Crocodile au repos dans l’eau',
+    ],
+    [
+        'habitat' => 'Jungle',
+        'titre'   => 'La jungle tropicale',
+        'page'    => 'jungle.php',
+        'image'   => 'images/joshua-j-cotten-dJTmBXaNdxY-unsplash.jpg',
+        'alt'     => 'Bébé singe blotti contre sa mère',
+    ],
+    [
+        'habitat' => 'Savane',
+        'titre'   => 'La savane sauvage',
+        'page'    => 'savane.php',
+        'image'   => 'images/jaliya-rasaputra-U_eZSoRUMQM-unsplash.jpg',
+        'alt'     => 'Lionne',
+    ],
+];
+
 $avis = db()->query(
     'SELECT nickname, title, comment, created_at
      FROM reviews
@@ -111,47 +154,57 @@ require __DIR__ . '/includes/header.php';
           <h2 class="mb-4">Venez découvrir nos incroyables pensionnaires !</h2>
 
           <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
-            <!-- Marais -->
-            <div class="col">
-              <img
-                src="images/gary-yost-b2iauwRsxOM-unsplash.jpg"
-                class="avatar-128 img-fluid"
-                alt="Crocodile au repos dans l’eau"
-              />
-              <h3 class="h6 mt-3">
-                <a class="text-decoration-none btn-text-green" href="marais.php">
-                  Les marais exotiques
-                </a>
-              </h3>
-            </div>
+            <?php foreach ($cartesHabitats as $carte): ?>
+              <?php
+                $animaux  = $animauxParHabitat[$carte['habitat']] ?? [];
+                $visibles = array_slice($animaux, 0, $animauxVisibles);
+                $restants = array_slice($animaux, $animauxVisibles);
+                // Identifiant unique par carte, sinon un clic déplierait les trois.
+                $idRepli  = 'autres-' . strtolower($carte['habitat']);
+              ?>
+              <div class="col">
+                <img
+                  src="<?= e($carte['image']) ?>"
+                  class="avatar-128 img-fluid"
+                  alt="<?= e($carte['alt']) ?>"
+                />
+                <h3 class="h6 mt-3">
+                  <a class="text-decoration-none btn-text-green" href="<?= e($carte['page']) ?>">
+                    <?= e($carte['titre']) ?>
+                  </a>
+                </h3>
 
-            <!-- Jungle -->
-            <div class="col">
-              <img
-                src="images/joshua-j-cotten-dJTmBXaNdxY-unsplash.jpg"
-                class="avatar-128 img-fluid"
-                alt="Bébé singe blotti contre sa mère"
-              />
-              <h3 class="h6 mt-3">
-                <a class="text-decoration-none btn-text-green" href="jungle.php"
-                  >La jungle tropicale</a
-                >
-              </h3>
-            </div>
+                <?php if ($visibles): ?>
+                  <p class="small text-muted mb-1">
+                    <?php foreach ($visibles as $i => $unAnimal): ?>
+                      <?= $i > 0 ? ' · ' : '' ?>
+                      <a class="text-decoration-none btn-text-green"
+                         href="animal.php?id=<?= (int) $unAnimal['id'] ?>"><?= e($unAnimal['name']) ?></a>
+                    <?php endforeach; ?>
+                  </p>
 
-            <!-- Savane -->
-            <div class="col">
-              <img
-                src="images/jaliya-rasaputra-U_eZSoRUMQM-unsplash.jpg"
-                class="avatar-128 img-fluid"
-                alt="Lionne"
-              />
-              <h3 class="h6 mt-3">
-                <a class="text-decoration-none btn-text-green" href="savane.php"
-                  >La savane sauvage</a
-                >
-              </h3>
-            </div>
+                  <?php if ($restants): ?>
+                    <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#<?= e($idRepli) ?>"
+                            aria-expanded="false"
+                            aria-controls="<?= e($idRepli) ?>">
+                      et <?= count($restants) ?> autre<?= count($restants) > 1 ? 's' : '' ?>
+                    </button>
+
+                    <div class="collapse" id="<?= e($idRepli) ?>">
+                      <p class="small text-muted mb-0">
+                        <?php foreach ($restants as $i => $unAnimal): ?>
+                          <?= $i > 0 ? ' · ' : '' ?>
+                          <a class="text-decoration-none btn-text-green"
+                             href="animal.php?id=<?= (int) $unAnimal['id'] ?>"><?= e($unAnimal['name']) ?></a>
+                        <?php endforeach; ?>
+                      </p>
+                    </div>
+                  <?php endif; ?>
+                <?php endif; ?>
+              </div>
+            <?php endforeach; ?>
           </div>
 
           <!-- Lien “expériences” -->
