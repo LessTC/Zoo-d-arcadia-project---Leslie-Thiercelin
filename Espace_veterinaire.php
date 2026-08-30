@@ -110,15 +110,40 @@ $commentaires = db()->query(
 
 // Les repas saisis par les soigneurs — le vétérinaire les consulte, il ne
 // les modifie pas : chaque rôle a son périmètre.
-$repas = db()->query(
-    'SELECT f.feed_date, f.feed_time, f.food, f.quantity, f.unit,
-            a.name AS animal, u.first_name AS soigneur
-     FROM feedings f
-     JOIN animals a ON a.id = f.animal_id
-     JOIN users u   ON u.id = f.employee_id
-     ORDER BY f.feed_date DESC, f.feed_time DESC
-     LIMIT 30'
-)->fetchAll();
+// US 8 : « Le vétérinaire voit également sur son espace ET PAR ANIMAL tout
+// ce que l'animal a pu manger. » D'où le filtre : sans lui, il devrait
+// parcourir la liste complète pour retrouver les repas d'une bête.
+$filtreAnimalId = (int) ($_GET['repas_animal'] ?? 0);
+
+$sqlRepas = 'SELECT f.feed_date, f.feed_time, f.food, f.quantity, f.unit,
+                    a.name AS animal, u.first_name AS soigneur
+             FROM feedings f
+             JOIN animals a ON a.id = f.animal_id
+             JOIN users u   ON u.id = f.employee_id';
+
+$parametresRepas = [];
+
+if ($filtreAnimalId > 0) {
+    $sqlRepas         .= ' WHERE f.animal_id = ?';
+    $parametresRepas[] = $filtreAnimalId;
+}
+
+$sqlRepas .= ' ORDER BY f.feed_date DESC, f.feed_time DESC LIMIT 50';
+
+$requete = db()->prepare($sqlRepas);
+$requete->execute($parametresRepas);
+$repas = $requete->fetchAll();
+
+// Le nom de l'animal filtré, pour l'afficher dans le titre du tableau.
+$nomAnimalFiltre = '';
+if ($filtreAnimalId > 0) {
+    foreach ($animaux as $unAnimal) {
+        if ((int) $unAnimal['id'] === $filtreAnimalId) {
+            $nomAnimalFiltre = $unAnimal['name'];
+            break;
+        }
+    }
+}
 
 $titrePage  = 'Espace Vétérinaire — Zoo d’Arcadia';
 $classeBody = '';
@@ -311,7 +336,40 @@ require __DIR__ . '/includes/header.php';
             <!-- ========== SUIVI ALIMENTATION ========== -->
             <div class="tab-pane fade<?= $ongletActif === 'food' ? ' show active' : '' ?>" id="pane-food" role="tabpanel">
               <div class="card p-4">
-                <h2 class="h5 mb-3">Alimentation des animaux</h2>
+                <h2 class="h5 mb-3">
+                  Alimentation des animaux
+                  <?php if ($nomAnimalFiltre !== ''): ?>
+                    — <?= e($nomAnimalFiltre) ?>
+                  <?php endif; ?>
+                </h2>
+
+                <form action="Espace_veterinaire.php" method="get"
+                      class="row g-2 align-items-end mb-3">
+                  <input type="hidden" name="onglet" value="food">
+
+                  <div class="col-12 col-md-7">
+                    <label for="repasAnimal" class="form-label">Filtrer par animal</label>
+                    <select id="repasAnimal" name="repas_animal" class="form-select">
+                      <option value="0">Tous les animaux</option>
+                      <?php foreach ($animaux as $unAnimal): ?>
+                        <option value="<?= (int) $unAnimal['id'] ?>"
+                          <?= $filtreAnimalId === (int) $unAnimal['id'] ? 'selected' : '' ?>>
+                          <?= e($unAnimal['name']) ?> — <?= e($unAnimal['habitat']) ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+
+                  <div class="col-6 col-md-3">
+                    <button class="btn btn-brand w-100" type="submit">Filtrer</button>
+                  </div>
+
+                  <div class="col-6 col-md-2">
+                    <a class="btn btn-outline-secondary w-100"
+                       href="Espace_veterinaire.php?onglet=food">Tout voir</a>
+                  </div>
+                </form>
+
                 <table class="table table-sm">
                   <thead>
                     <tr>
@@ -321,7 +379,13 @@ require __DIR__ . '/includes/header.php';
                   </thead>
                   <tbody>
                     <?php if (!$repas): ?>
-                      <tr><td colspan="6" class="text-muted">Aucun repas enregistré.</td></tr>
+                      <tr>
+                        <td colspan="6" class="text-muted">
+                          <?= $nomAnimalFiltre !== ''
+                              ? 'Aucun repas enregistré pour ' . e($nomAnimalFiltre) . '.'
+                              : 'Aucun repas enregistré.' ?>
+                        </td>
+                      </tr>
                     <?php endif; ?>
                   
                     <?php foreach ($repas as $unRepas): ?>
