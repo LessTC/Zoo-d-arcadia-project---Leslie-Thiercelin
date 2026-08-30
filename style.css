@@ -1,10 +1,12 @@
 /* ==============================
-   CHARTE (variables globales)
+   CHARTE
    ============================== */
 :root {
   /* Couleurs principales */
   --green-dark: #556b2f;
+  --green-dark-rgb: 85, 107, 47; /* = --green-dark, pour les rgba() */
   --green-laurel: #6b8e23;
+  --green-footer: #455a26;
   --cream: #fafae6;
 
   --gray-light: #d3d3d3;
@@ -37,6 +39,15 @@ body {
   font-family: var(--font-body);
   color: var(--text-dark);
   background: var(--cream);
+  /* Footer collé en bas de l'écran quand le contenu est court :
+     la page occupe au moins toute la hauteur visible, et main
+     absorbe l'espace restant entre le header et le footer. */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
 }
 h1,
 h2,
@@ -60,6 +71,10 @@ a:hover {
   background: var(--green-dark);
   min-height: 64px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* Garde le menu déplié au-dessus des sections en position: relative
+     qui suivent le header (hero, fonds d'habitat, etc.) */
+  position: relative;
+  z-index: 1030;
 }
 .navbar .navbar-brand {
   color: var(--text-light);
@@ -80,7 +95,9 @@ a:hover {
   padding: 0.5rem 0.6rem;
   border-radius: 0.5rem;
   background-color: rgba(255, 255, 255, 0.12);
-  transition: background-color 0.2s ease, transform 0.05s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.05s ease;
 }
 .navbar .navbar-toggler:hover {
   background-color: rgba(255, 255, 255, 0.18);
@@ -97,9 +114,46 @@ a:hover {
   width: 28px;
   height: 22px;
   background-size: 28px 22px;
-  background-image: url('data:image/svg+xml;utf8,\
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 22">\
-<path d="M3 2.5H27 M3 11H27 M3 19.5H27" stroke="rgba(255,255,255,0.96)" stroke-width="2.8" stroke-linecap="round"/></svg>');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 22'%3E%3Cpath d='M3 2.5H27 M3 11H27 M3 19.5H27' stroke='rgba(255,255,255,0.96)' stroke-width='2.8' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* Menu burger compact*/
+
+.nav-actions {
+  position: relative;
+}
+
+.navbar .navbar-collapse {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+}
+
+.navbar .navbar-collapse.show {
+  display: block !important;
+  /* Même rendu que le burger : vert de la navbar + voile blanc 12% */
+  background-color: var(--green-dark);
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.12)
+  );
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.navbar .navbar-collapse .navbar-nav {
+  flex-direction: column;
+  margin-left: 0 !important;
+}
+
+.navbar .navbar-collapse .nav-link {
+  padding: 0.35rem 0.5rem;
+  white-space: nowrap;
+}
+
+.navbar .navbar-collapse .nav-item + .nav-item {
+  margin-top: 0.25rem;
 }
 
 /* ==============================
@@ -117,6 +171,11 @@ a:hover {
   background: rgba(255, 69, 0, 0.85);
   color: var(--text-light);
 }
+/* Variante adoucie, utilisée sur le bloc « Infos pratiques » de l'accueil */
+.panel-red-soft {
+  background: rgba(255, 69, 0, 0.5);
+  color: var(--text-light);
+}
 .panel-green {
   background: rgba(85, 107, 47, 0.85);
   color: var(--text-light);
@@ -132,6 +191,48 @@ a:hover {
 .btn-brand:hover {
   background: var(--brown-saddle);
   color: var(--text-light);
+}
+
+/* Carte « Avis » de l'accueil : teinte distincte des autres cartes */
+.card-avis {
+  background: #e3e6c4;
+}
+
+.btn-text-green {
+  color: var(--green-dark);
+  transition: color 0.2s ease;
+}
+
+.btn-text-green:hover {
+  color: var(--green-laurel);
+}
+
+/* ==============================
+   COMPOSANTS BOOTSTRAP AUX COULEURS DE LA CHARTE
+   On surcharge les variables CSS exposées par Bootstrap plutôt que
+   ses règles : pas de !important, et le comportement du composant
+   (états, responsive) reste celui du framework.
+   ============================== */
+
+/* Onglets des espaces connectés (admin, soigneur, vétérinaire) */
+.nav-pills {
+  --bs-nav-link-color: var(--green-dark);
+  /* Survol plus foncé que l'état normal : 7,1:1, conforme WCAG AA et AAA */
+  --bs-nav-link-hover-color: var(--green-footer);
+  --bs-nav-pills-link-active-bg: var(--green-dark);
+  --bs-nav-pills-link-active-color: var(--text-light);
+}
+
+/* Barres de progression (statistiques du dashboard admin) */
+.progress {
+  --bs-progress-bar-bg: var(--green-dark);
+}
+
+/* Anneau de focus des champs : repère clavier, il doit rester visible */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--green-laurel);
+  box-shadow: 0 0 0 0.25rem rgba(var(--green-dark-rgb), 0.25);
 }
 
 /* ==============================
@@ -163,7 +264,7 @@ a:hover {
 }
 
 /* ==============================
-   BLOCS INTRO (lisibilité sur fond)
+   BLOCS INTRO
    ============================== */
 .intro-savane,
 .intro-jungle,
@@ -207,6 +308,34 @@ a:hover {
 }
 
 /* ==============================
+   HERO ACCUEIL (index)
+   ============================== */
+.hero {
+  position: relative;
+  background: url("images/matthew-cabret-ub1sSvJ_Tbs-unsplash.jpg") center/cover
+    no-repeat;
+  color: var(--text-light);
+  min-height: 440px;
+  display: flex;
+  align-items: center;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.25));
+}
+.hero .content {
+  position: relative;
+  z-index: 1;
+}
+/* Le titre passe en clair : la règle h1…h5 le mettrait en vert foncé,
+   illisible sur l'image de fond */
+.hero h1 {
+  color: var(--text-light);
+}
+
+/* ==============================
    PAGE CONNEXION
    ============================== */
 .bg-connexion {
@@ -221,7 +350,10 @@ a:hover {
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
 }
-.bg-connexion > * {
+/* Le contenu passe au-dessus du voile sombre. On exclut le header :
+   il a son propre z-index (voir .navbar) pour rester au-dessus de tout. */
+.bg-connexion > main,
+.bg-connexion > footer {
   position: relative;
   z-index: 1;
 }
@@ -244,7 +376,7 @@ a:hover {
    FOOTER
    ============================== */
 footer {
-  background: var(--green-dark);
+  background: var(--green-footer);
   color: var(--text-light);
   text-align: center;
   padding: 1rem;
@@ -263,7 +395,9 @@ footer {
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.38));
 }
-.bg-contact > * {
+/* Idem page Contact : le header est exclu, il gère son propre empilement. */
+.bg-contact > main,
+.bg-contact > footer {
   position: relative;
   z-index: 1;
 }
@@ -302,31 +436,43 @@ footer {
 
 /** espace admin **/
 
-/* Mise en hauteur douce de la zone principale du dashboard */
-.admin-layout { background: #FAFAE6; }
-
 /* Harmonise les cartes de tableau de bord */
-.card h2, .card h3 { color: var(--green-dark); }
+.card h2,
+.card h3 {
+  color: var(--green-dark);
+}
 
 /* Fond général de l’espace Admin */
 .admin-layout {
-  background: #8e3f33; /* brun-rouge */
-  min-height: 100vh;
+  /* Dégradé brun-rouge, construit autour de la teinte d'origine #8e3f33 */
+  background: linear-gradient(
+    180deg,
+    #a85246 0%,
+    #8e3f33 45%,
+    #7a3229 75%,
+    #6b2e26 100%
+  );
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
 /* Harmonise les cartes sur fond sombre */
 .admin-layout .card {
-  background: #fff;  /* cartes claires pour contraster */
+  background: #fff; /* cartes claires pour contraster */
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
 
 /* Fond général du dashboard vétérinaire */
 .vet-layout {
-  background: #35887E;
-  min-height: 100vh;
+  /* Dégradé ancré sur la charte : --orange-peru vers --brown-saddle */
+  background: linear-gradient(
+    180deg,
+    #e0a86a 0%,
+    var(--orange-peru) 45%,
+    #a86a30 75%,
+    var(--brown-saddle) 100%
+  );
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
@@ -340,8 +486,14 @@ footer {
 
 /* Fond général du dashboard Employé */
 .employe-layout {
-  background: #556B2F; /* vert olive foncé */
-  min-height: 100vh;
+  /* Dégradé vert ancré sur --green-laurel, plus clair que l'olive précédent */
+  background: linear-gradient(
+    180deg,
+    #9ab850 0%,
+    #83a338 45%,
+    var(--green-laurel) 75%,
+    #55701c 100%
+  );
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
