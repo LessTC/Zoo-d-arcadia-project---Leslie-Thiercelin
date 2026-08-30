@@ -100,13 +100,13 @@ INSERT INTO animals (name, species, description, diet, health_state, habitat_id,
 -- ---------------------------------------------------------------------
 --  Services — repris de Services.html
 -- ---------------------------------------------------------------------
-INSERT INTO services (name, schedule, description) VALUES
-  ('Visite guidée (gratuit)', '10h – 17h',
-   'Une visite commentée par nos soigneurs, incluse dans le prix du billet.'),
-  ('Visite en petit train', '9h – 19h',
-   'Faites le tour du parc confortablement installé, avec commentaires à bord.'),
-  ('Restauration', '11h30 – 15h',
-   'Restaurant et snack sur place, avec une carte de produits locaux.');
+INSERT INTO services (id, name, category, slug, schedule, description) VALUES
+  (1, 'Visite guidée (gratuit)', 'visite', 'visite-guidee', '10h – 17h',
+   'Profitez de l’expérience de nos guides pour découvrir les secrets de nos animaux.'),
+  (2, 'Visite en petit train', 'visite', 'visite-petit-train', '9h – 19h',
+   'Le petit train permet une visite en toute tranquillité de l’ensemble du parc.'),
+  (3, 'Restauration', 'restauration', 'restauration', '11h30 – 15h',
+   'Le parc propose un service de restauration rapide (sucré/salé) toute la journée, ainsi qu’un restaurant entre 11h et 14h.');
 
 
 -- ---------------------------------------------------------------------
@@ -123,3 +123,14 @@ INSERT INTO reviews (nickname, title, comment, is_approved, created_at) VALUES
    'Très belle découverte !', TRUE, '2024-05-02 14:30:00'),
   ('L.', 'Un peu d’attente',
    'Un peu d’attente à l’entrée, mais la visite vaut le détour.', FALSE, '2025-05-10 09:15:00');
+
+
+
+-- ---------------------------------------------------------------------
+--  Images des services. La restauration en a deux, les visites une seule.
+-- ---------------------------------------------------------------------
+INSERT INTO service_images (service_id, path, alt, position) VALUES
+  (1, 'images/steve-payne-ygYxOk1PKcU-unsplash.jpg',      'Panda roux nourri par un guide', 1),
+  (2, 'images/dusan-veverkolog-of8koAjYI7c-unsplash.jpg', 'Petit train du zoo',             1),
+  (3, 'images/joseph-gonzalez-zcUgjyqEwe8-unsplash.jpg',  'Pancakes aux fruits',            1),
+  (3, 'images/eaters-collective-12eHC6FxPyg-unsplash.jpg','Pâtes aux légumes',              2);
