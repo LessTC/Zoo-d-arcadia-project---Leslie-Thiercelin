@@ -19,6 +19,8 @@ USE arcadia;
 
 -- Suppression dans l'ordre inverse des dépendances : une table
 -- référencée par une clé étrangère ne peut pas être supprimée en premier.
+DROP TABLE IF EXISTS contact_messages;
+DROP TABLE IF EXISTS service_images;
 DROP TABLE IF EXISTS feedings;
 DROP TABLE IF EXISTS habitat_comments;
 DROP TABLE IF EXISTS veterinary_reports;
@@ -224,9 +226,50 @@ CREATE TABLE reviews (
 CREATE TABLE services (
   id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name        VARCHAR(150) NOT NULL,
+  -- Distingue les visites de la restauration à l'affichage, sans dupliquer
+  -- la structure dans une seconde table.
+  category    VARCHAR(30)  NOT NULL DEFAULT 'visite',
+  -- Sert d'ancre dans l'URL publique : Services.php#visite-guidee
+  slug        VARCHAR(100) NULL,
   schedule    VARCHAR(100) NULL,
   description TEXT         NULL,
   image       VARCHAR(255) NULL,
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_services_slug (slug)
+) ENGINE = InnoDB;
+
+
+
+-- ---------------------------------------------------------------------
+--  service_images : un service possède zéro, une ou plusieurs photos.
+--  position sert à les ordonner sans dépendre de l'ordre d'insertion.
+-- ---------------------------------------------------------------------
+CREATE TABLE service_images (
+  id         INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+  service_id INT UNSIGNED     NOT NULL,
+  path       VARCHAR(255)     NOT NULL,
+  alt        VARCHAR(255)     NOT NULL,
+  position   TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (id),
+  KEY idx_service_images_service (service_id),
+  CONSTRAINT fk_service_images_service
+    FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE CASCADE
+) ENGINE = InnoDB;
+
+
+-- ---------------------------------------------------------------------
+--  contact_messages : demandes envoyées depuis le formulaire de contact.
+--  is_read permet de distinguer les messages déjà traités.
+-- ---------------------------------------------------------------------
+CREATE TABLE contact_messages (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email      VARCHAR(180) NOT NULL,
+  phone      VARCHAR(30)  NULL,
+  subject    VARCHAR(150) NOT NULL,
+  message    TEXT         NOT NULL,
+  is_read    BOOLEAN      NOT NULL DEFAULT FALSE,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_contact_read (is_read)
 ) ENGINE = InnoDB;

@@ -70,7 +70,7 @@ require __DIR__ . '/includes/header.php';
       
                 <?php foreach ($imagesParService[$visite['id']] ?? [] as $image): ?>
                   <img src="<?= e($image['path']) ?>"
-                       class="img-fluid rounded" alt="<?= e($image['alt']) ?>">
+                       class="photo-service rounded" alt="<?= e($image['alt']) ?>">
                 <?php endforeach; ?>
               </article>
             </div>
@@ -89,7 +89,7 @@ require __DIR__ . '/includes/header.php';
               <?php foreach ($imagesParService[$restauration['id']] ?? [] as $image): ?>
                 <div class="col">
                   <img src="<?= e($image['path']) ?>"
-                       class="img-fluid rounded" alt="<?= e($image['alt']) ?>">
+                       class="photo-service rounded" alt="<?= e($image['alt']) ?>">   
                 </div>
               <?php endforeach; ?>
             </div>
