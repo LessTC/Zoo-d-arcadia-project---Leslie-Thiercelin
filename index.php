@@ -44,48 +44,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// US 1 : l'accueil doit mentionner les animaux du zoo, pas seulement les
-// habitats. Une seule requête, rangée ensuite par habitat — plutôt qu'une
-// requête par carte, qui multiplierait les allers-retours vers la base.
+// US 1 : l'accueil doit mentionner les habitats ET les animaux du zoo.
+// Les cartes sont construites depuis la base, et non écrites en dur : un
+// habitat créé depuis l'espace administrateur apparaît ici tout seul.
+$habitats = db()->query('SELECT id, name, image FROM habitats ORDER BY name')->fetchAll();
+
+// Une seule requête pour tous les animaux, rangés ensuite par habitat —
+// plutôt qu'une requête par carte, qui multiplierait les allers-retours
+// vers la base. On range par identifiant d'habitat, pas par nom : un nom
+// peut être renommé depuis l'espace administrateur, un identifiant non.
 $animauxParHabitat = [];
-$lignes = db()->query(
-    'SELECT a.id, a.name, h.name AS habitat
-     FROM animals a
-     JOIN habitats h ON h.id = a.habitat_id
-     ORDER BY h.name, a.id'
-);
+$lignes = db()->query('SELECT id, name, habitat_id FROM animals ORDER BY habitat_id, id');
 foreach ($lignes as $ligne) {
-    $animauxParHabitat[$ligne['habitat']][] = $ligne;
+    $animauxParHabitat[$ligne['habitat_id']][] = $ligne;
 }
 
 // Nombre de noms affichés avant le repli. Au-delà, un bouton déplie le reste.
 $animauxVisibles = 3;
-
-// Les trois cartes de la section « Découvrir ». Le libellé et la photo sont
-// propres à la page d'accueil ; la clé « habitat » fait le lien avec la base.
-$cartesHabitats = [
-    [
-        'habitat' => 'Marais',
-        'titre'   => 'Les marais exotiques',
-        'page'    => 'marais.php',
-        'image'   => 'images/gary-yost-b2iauwRsxOM-unsplash.jpg',
-        'alt'     => 'Crocodile au repos dans l’eau',
-    ],
-    [
-        'habitat' => 'Jungle',
-        'titre'   => 'La jungle tropicale',
-        'page'    => 'jungle.php',
-        'image'   => 'images/joshua-j-cotten-dJTmBXaNdxY-unsplash.jpg',
-        'alt'     => 'Bébé singe blotti contre sa mère',
-    ],
-    [
-        'habitat' => 'Savane',
-        'titre'   => 'La savane sauvage',
-        'page'    => 'savane.php',
-        'image'   => 'images/jaliya-rasaputra-U_eZSoRUMQM-unsplash.jpg',
-        'alt'     => 'Lionne',
-    ],
-];
 
 $avis = db()->query(
     'SELECT nickname, title, comment, created_at
@@ -154,23 +129,26 @@ require __DIR__ . '/includes/header.php';
           <h2 class="mb-4">Venez découvrir nos incroyables pensionnaires !</h2>
 
           <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
-            <?php foreach ($cartesHabitats as $carte): ?>
+            <?php foreach ($habitats as $unHabitat): ?>
               <?php
-                $animaux  = $animauxParHabitat[$carte['habitat']] ?? [];
+                $animaux  = $animauxParHabitat[$unHabitat['id']] ?? [];
                 $visibles = array_slice($animaux, 0, $animauxVisibles);
                 $restants = array_slice($animaux, $animauxVisibles);
-                // Identifiant unique par carte, sinon un clic déplierait les trois.
-                $idRepli  = 'autres-' . strtolower($carte['habitat']);
+                // Identifiant unique par carte, sinon un clic déplierait
+                // les listes de toutes les cartes en même temps.
+                $idRepli  = 'autres-habitat-' . (int) $unHabitat['id'];
               ?>
               <div class="col">
-                <img
-                  src="<?= e($carte['image']) ?>"
-                  class="avatar-128 img-fluid"
-                  alt="<?= e($carte['alt']) ?>"
-                />
+                <?php if ($unHabitat['image']): ?>
+                  <img
+                    src="<?= e($unHabitat['image']) ?>"
+                    class="avatar-128 img-fluid"
+                    alt="Habitat <?= e($unHabitat['name']) ?>"
+                  />
+                <?php endif; ?>
                 <h3 class="h6 mt-3">
-                  <a class="text-decoration-none btn-text-green" href="<?= e($carte['page']) ?>">
-                    <?= e($carte['titre']) ?>
+                  <a class="text-decoration-none btn-text-green" href="habitat.php?id=<?= (int) $unHabitat['id'] ?>">
+                    <?= e($unHabitat['name']) ?>
                   </a>
                 </h3>
 

@@ -274,9 +274,7 @@ a:hover {
 /* ==============================
    BLOCS INTRO
    ============================== */
-.intro-savane,
-.intro-jungle,
-.intro-marais {
+.intro-habitat {
   background: rgba(0, 0, 0, 0.25);
   border-radius: 12px;
 }
@@ -284,6 +282,16 @@ a:hover {
 /* ==============================
    FONDS DÉGRADÉS PAR HABITAT
    ============================== */
+
+/* Fond de repli : sert à la liste des habitats, et à tout habitat créé
+   depuis l'espace administrateur pour lequel la charte n'a pas prévu de
+   dégradé dédié. Placé AVANT les fonds spécifiques : à spécificité égale,
+   c'est la dernière règle écrite qui gagne. */
+.bg-habitat {
+  background: linear-gradient(180deg, #6f8f5a 0%, #455a26 100%);
+  min-height: 100vh;
+}
+
 .bg-savane {
   background: linear-gradient(
     180deg,

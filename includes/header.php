@@ -82,7 +82,7 @@ $utilisateurConnecte = utilisateur_connecte();
           <div id="nav" class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
               <li class="nav-item"><a class="nav-link" href="index.php">Accueil</a></li>
-              <li class="nav-item"><a class="nav-link" href="index.php#decouvrir">Habitats</a></li>
+              <li class="nav-item"><a class="nav-link" href="habitats.php">Habitats</a></li>
               <li class="nav-item"><a class="nav-link" href="Services.php">Services</a></li>
               <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
