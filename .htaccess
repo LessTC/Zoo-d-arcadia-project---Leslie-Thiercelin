@@ -1,0 +1,25 @@
+# =====================================================================
+#  Zoo d'Arcadia — Restrictions d'accès du serveur web
+#
+#  Certains dossiers du projet doivent exister sur le serveur mais n'ont
+#  aucune raison d'être servis à un visiteur. Sans cette règle, ils sont
+#  téléchargeables par quiconque connaît leur nom :
+#
+#    .git/      permet de reconstituer tout l'historique du projet
+#    config/    contient les identifiants de connexion à la base
+#    sql/       expose la structure complète de la base de données
+#    courriels/ contient les messages journalisés des visiteurs
+#
+#  L'application, elle, continue d'y accéder normalement : elle lit ces
+#  fichiers depuis le disque (via __DIR__), pas par une requête HTTP.
+#
+#  Le bloc <IfModule> est une précaution : si mod_rewrite était absent,
+#  ces directives seraient ignorées au lieu de provoquer une erreur 500.
+# =====================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # [F] renvoie 403 Interdit, [L] arrête le traitement des règles.
+  RewriteRule ^(\.git|config|sql|courriels)(/|$) - [F,L]
+</IfModule>
