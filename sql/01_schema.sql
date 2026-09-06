@@ -8,14 +8,17 @@
 --  ATTENTION : ce script est ré-exécutable, mais il SUPPRIME les tables
 --  existantes avant de les recréer. Toute donnée saisie est perdue.
 --
---  Exécution :  mysql -u root < sql/01_schema.sql
+--  Ce script ne crée PAS la base : il agit sur celle qu'on lui désigne.
+--  Le nom de la base est une décision d'installation, pas de schéma —
+--  en local elle s'appelle « arcadia », chez un hébergeur mutualisé le
+--  nom est souvent imposé (« compte_arcadia »). Le même fichier sert
+--  ainsi partout, sans retouche.
+--
+--  Créer la base au préalable, en utf8mb4 :
+--    CREATE DATABASE arcadia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+--
+--  Exécution :  mysql -u root arcadia < sql/01_schema.sql
 -- =====================================================================
-
-CREATE DATABASE IF NOT EXISTS arcadia
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE arcadia;
 
 -- Suppression dans l'ordre inverse des dépendances : une table
 -- référencée par une clé étrangère ne peut pas être supprimée en premier.
