@@ -8,10 +8,12 @@
 --  à faire dans un fichier versionné sur Git. Les comptes sont créés
 --  par le script sql/03_create_user.php.
 --
+--  Comme 01_schema.sql, ce script ne choisit pas la base : il agit sur
+--  celle qu'on lui désigne à l'exécution. Il doit être lancé APRÈS
+--  01_schema.sql, qui crée les tables.
+--
 --  Exécution :  mysql -u root arcadia < sql/02_donnees.sql
 -- =====================================================================
-
-USE arcadia;
 
 
 -- ---------------------------------------------------------------------

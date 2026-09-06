@@ -44,10 +44,26 @@ chaque machine.
 
 ### 3. Créer la base de données
 
-Dans phpMyAdmin, onglet **Importer**, lancer dans cet ordre :
+Dans phpMyAdmin, créer d'abord une base nommée `arcadia`, avec
+l'interclassement **utf8mb4_unicode_ci**.
 
-1. `sql/01_schema.sql` — crée la base `arcadia` et ses 11 tables
+Puis, cette base étant sélectionnée, aller dans l'onglet **Importer** et
+lancer les deux scripts dans cet ordre :
+
+1. `sql/01_schema.sql` — crée les 11 tables
 2. `sql/02_donnees.sql` — insère les habitats, animaux, services et avis
+
+Les scripts ne créent pas la base et ne la nomment nulle part : ils
+agissent sur celle qui est sélectionnée. C'est ce qui permet de les
+rejouer tels quels chez un hébergeur, où le nom de la base est souvent
+imposé.
+
+En ligne de commande, l'équivalent est :
+
+```bash
+mysql -u root arcadia < sql/01_schema.sql
+mysql -u root arcadia < sql/02_donnees.sql
+```
 
 ### 4. Créer les comptes du back-office
 
