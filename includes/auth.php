@@ -18,10 +18,43 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
 
-/** Ouvre la session, sauf si elle l'est déjà. */
+/**
+ * Ouvre la session, sauf si elle l'est déjà.
+ *
+ * Les trois attributs du cookie sont déclarés AVANT session_start(), car
+ * c'est cet appel qui envoie le cookie au navigateur : après, il est trop
+ * tard pour en changer les règles.
+ *
+ *   samesite = Lax  protège du CSRF (falsification de requête entre sites).
+ *                   Le navigateur joint normalement le cookie de session en
+ *                   fonction de la DESTINATION de la requête, sans regarder
+ *                   d'où elle part : une page malveillante pourrait donc
+ *                   déclencher une suppression sur le dashboard au nom d'un
+ *                   administrateur connecté. « Lax » interdit d'envoyer le
+ *                   cookie sur une requête POST venant d'un autre domaine,
+ *                   tout en le conservant quand la personne arrive sur le
+ *                   site par un lien ordinaire.
+ *
+ *   httponly = true rend le cookie invisible à JavaScript. Si une faille XSS
+ *                   passait malgré l'échappement, le numéro de session ne
+ *                   pourrait pas être lu et recopié ailleurs.
+ *
+ *   secure          n'impose HTTPS qu'en production. En local, XAMPP sert le
+ *                   site en HTTP : exiger HTTPS empêcherait toute connexion.
+ *                   On se cale donc sur le protocole réellement utilisé.
+ *
+ * Ces trois réglages ne remplacent pas un jeton anti-CSRF par formulaire.
+ * Ils constituent une défense en profondeur, à moindre coût.
+ */
 function demarrer_session(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
+        session_set_cookie_params([
+            'httponly' => true,
+            'samesite' => 'Lax',
+            'secure'   => !empty($_SERVER['HTTPS']),
+        ]);
+
         session_start();
     }
 }
