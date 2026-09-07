@@ -4,7 +4,15 @@ Application web de gestion d'un zoo : consultation des habitats et des animaux
 par les visiteurs, espaces réservés pour l'administrateur, les employés et les
 vétérinaires.
 
-**Stack** — PHP 8.2 · MySQL / MariaDB · MongoDB · Bootstrap 5
+**Site en ligne** — <https://lesstc.alwaysdata.net/>
+
+**Stack** — PHP 8.2+ · MySQL / MariaDB · MongoDB · Bootstrap 5
+
+Le développement se fait en local sous XAMPP (PHP 8.2, MariaDB 10.4) ; la
+production tourne chez alwaysdata (PHP 8.4, MariaDB 11.4) avec la base NoSQL
+sur un cluster MongoDB Atlas. Les instructions ci-dessous concernent
+l'installation locale ; la démarche de déploiement est décrite dans la
+documentation technique.
 
 ## Fonctionnalités
 
