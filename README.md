@@ -76,15 +76,24 @@ mysql -u root arcadia < sql/02_donnees.sql
 ### 4. Créer les comptes du back-office
 
 Par sécurité, l'application ne permet pas de créer un compte administrateur.
-Le premier se crée en ligne de commande, depuis la racine du projet :
+Les comptes se gèrent en ligne de commande, depuis la racine du projet :
 
 ```bash
 php sql/03_create_user.php
 ```
 
-Le script demande le rôle, l'adresse, le nom et le mot de passe. Choisir le
-rôle **1** pour un administrateur. Répéter l'opération pour créer un compte
-employé (rôle **2**) et un compte vétérinaire (rôle **3**).
+Le script demande d'abord l'adresse e-mail, puis s'adapte :
+
+- **adresse inconnue** — il demande le rôle, le prénom, le nom et le mot de
+  passe, et crée le compte. Choisir le rôle **1** pour un administrateur,
+  **2** pour un employé, **3** pour un vétérinaire.
+- **adresse existante** — il affiche le compte concerné et propose de
+  **redéfinir son mot de passe**.
+
+Ce second usage répond à l'oubli d'un mot de passe. L'énoncé prévoit que
+l'utilisateur se rapproche de l'administrateur pour l'obtenir, et interdit
+qu'il circule par courriel : une réinitialisation en libre-service par mail
+était donc exclue par principe.
 
 Le mot de passe n'est jamais stocké en clair : seule son empreinte, produite
 par `password_hash()`, est enregistrée.
