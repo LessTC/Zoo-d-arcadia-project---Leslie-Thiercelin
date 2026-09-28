@@ -5,18 +5,11 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
 require __DIR__ . '/includes/mongo.php';
+require __DIR__ . '/includes/animaux.php';
 
 $animalId = (int) ($_GET['id'] ?? 0);
 
-$requete = db()->prepare(
-    'SELECT a.id, a.name, a.species, a.description, a.diet, a.health_state,
-            a.image, a.image_alt, a.habitat_id, h.name AS habitat
-     FROM animals a
-     JOIN habitats h ON h.id = a.habitat_id
-     WHERE a.id = ?'
-);
-$requete->execute([$animalId]);
-$animal = $requete->fetch();
+$animal = animal_detail($animalId);
 
 if (!$animal) {
     http_response_code(404);
@@ -28,24 +21,17 @@ if (!$animal) {
     exit;
 }
 
-// US11 : une consultation de plus. Placé APRÈS la vérification, pour ne
-// pas compter les visites sur un identifiant qui n'existe pas.
+// Compteur de consultation placé après  la vérification, pour ne
+// pas compter les visites sur un animal qui n'existe pas.
 incrementer_consultation((int) $animal['id']);
 
-// Le dernier passage du vétérinaire, s'il y en a eu un.
-$requete = db()->prepare(
-    'SELECT visit_date, animal_state, proposed_food, food_grams
-     FROM veterinary_reports
-     WHERE animal_id = ?
-     ORDER BY visit_date DESC, id DESC
-     LIMIT 1'
-);
-$requete->execute([$animal['id']]);
-$dernierRapport = $requete->fetch() ?: null;
+//dernier passage vétérinaire si applicable
+$dernierRapport = 
+animal_dernier_rapport((int) 
+$animal['id']);
 
 $titrePage       = $animal['name'] . ' — Zoo d’Arcadia';
 $descriptionPage = 'Fiche de ' . $animal['name'] . ', ' . $animal['species'] . ' au Zoo d’Arcadia.';
-// La fiche reprend le fond de son habitat : bg-savane, bg-jungle, bg-marais.
 $classeBody      = 'bg-habitat bg-' . strtolower($animal['habitat']);
 
 require __DIR__ . '/includes/header.php';

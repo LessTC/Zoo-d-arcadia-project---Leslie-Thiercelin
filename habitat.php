@@ -74,7 +74,8 @@ require __DIR__ . '/includes/header.php';
               <?php endif; ?>
 
               <h2 class="h5 mb-2">
-                <a href="animal.php?id=<?= (int) $animal['id'] ?>"
+               <a href="animal.php?id=<?= (int) $animal['id'] ?>"
+                   data-animal="<?= (int) $animal['id'] ?>"
                    class="text-decoration-none btn-text-green"><?= e($animal['name']) ?></a>
               </h2>
               <p class="small mb-3"><?= e($animal['description']) ?></p>
@@ -94,5 +95,40 @@ require __DIR__ . '/includes/header.php';
 
     </div>
   </main>
+
+<!-- Fiche animal en modale. Le contenu est vide au chargement : il est
+     rempli par script.js à partir de api/animal.php, au moment du clic. -->
+<div class="modal fade" id="modaleAnimal" tabindex="-1" aria-labelledby="modaleAnimalTitre" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="modaleAnimalTitre">Fiche animal</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <p id="modaleAnimalMessage" class="text-muted mb-0">Chargement…</p>
+
+        <div id="modaleAnimalContenu" hidden>
+          <img id="modaleAnimalImage" src="" alt="" class="img-fluid rounded mb-3">
+          <p class="text-muted mb-3" id="modaleAnimalEspece"></p>
+          <p id="modaleAnimalDescription"></p>
+          <ul class="list-unstyled mb-0">
+            <li><strong>Habitat :</strong> <span id="modaleAnimalHabitat"></span></li>
+            <li><strong>Nourriture :</strong> <span id="modaleAnimalNourriture"></span></li>
+            <li><strong>État :</strong> <span id="modaleAnimalEtat"></span></li>
+          </ul>
+          <p class="small text-muted mt-3 mb-0" id="modaleAnimalRapport"></p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#" id="modaleAnimalLien" class="btn btn-brand">Voir la fiche complète</a>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
