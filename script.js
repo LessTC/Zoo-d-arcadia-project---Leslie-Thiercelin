@@ -1,9 +1,9 @@
 /**
  * Le seul JavaScript maison du site.
  *
- * Tout le reste de l'interactivité vient du composant Collapse de Bootstrap,
- * réutilisé pour le menu burger, le dépliement des noms d'animaux sur
- * l'accueil et les onglets des espaces professionnels.
+ * Le reste de l'interactivité vient de composants Bootstrap déclarés dans
+ * le HTML : Collapse (menu burger, noms d'animaux sur l'accueil), Tab
+ * (onglets des espaces professionnels) et Modal (fiche animal).
  *
  * Ce fichier contenait auparavant deux simulations écrites à l'époque du
  * site statique : un faux envoi de formulaire et un faux ajout de repas
