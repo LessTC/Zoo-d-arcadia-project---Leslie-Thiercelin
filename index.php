@@ -105,7 +105,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="mb-2">
                   <strong>Adresse</strong>
                   <br />
-                  Rue de Brocéliance, 56000 Bretagne
+                  Rue de Brocéliande, 56000 Bretagne
                 </div>
                 <div class="mb-2">
                   <strong>Ouverture</strong>
@@ -288,7 +288,6 @@ require __DIR__ . '/includes/header.php';
                       <button type="submit" class="btn btn-brand">
                         Envoyer
                       </button>
-                      <!-- Ajouter le backend pour envoyer les messages sur la messagerie Dashboard admin-->
                     </div>
                   </div>
                 </form>

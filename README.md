@@ -6,7 +6,8 @@ vétérinaires.
 
 **Site en ligne** — <https://lesstc.alwaysdata.net/>
 
-**Stack** — PHP 8.2+ · MySQL / MariaDB · MongoDB · Bootstrap 5
+**Stack** — PHP 8.2+ (PDO) · MariaDB · MongoDB · Bootstrap 5 · JavaScript sans
+bibliothèque
 
 Le développement se fait en local sous XAMPP (PHP 8.2, MariaDB 10.4) ; la
 production tourne chez alwaysdata (PHP 8.4, MariaDB 11.4) avec la base NoSQL
@@ -17,6 +18,7 @@ documentation technique.
 ## Fonctionnalités
 
 - Consultation publique des habitats, des animaux et des services
+- Fiche animal ouverte en fenêtre, sans rechargement de page (requête `fetch`)
 - Dépôt d'avis par les visiteurs, soumis à validation
 - Trois espaces protégés : administrateur, employé, vétérinaire
 - Comptes rendus vétérinaires et suivi de l'alimentation
@@ -26,7 +28,9 @@ documentation technique.
 
 - **XAMPP** avec PHP 8.2 ou supérieur (Apache et MySQL / MariaDB)
 - **MongoDB Community Server** 6.0 ou supérieur
-- **L'extension PHP `mongodb`** : ajouter la ligne `extension=mongodb` dans
+- **L'extension PHP `mongodb`** : déposer le fichier `php_mongodb.dll`
+  correspondant **exactement à la version de PHP installée** dans
+  `C:\xampp\php\ext\`, ajouter la ligne `extension=php_mongodb.dll` dans
   `C:\xampp\php\php.ini`, puis **redémarrer Apache** depuis le panneau XAMPP
 - **Git**
 
@@ -117,14 +121,21 @@ réel ne concernera que ce fichier.
 est inactif : l'erreur est interceptée et consignée dans le journal de PHP,
 les fiches animaux restent consultables.
 
+**Sans JavaScript, le site reste fonctionnel.** Depuis la page d'un habitat,
+le nom d'un animal ouvre normalement sa fiche dans une fenêtre, sans
+rechargement. Si le JavaScript est désactivé ou si la requête échoue, le lien
+mène à la page complète `animal.php`, qui sert la même information.
+
 ## Structure du projet
 
-| Dossier     | Contenu                                                          |
-| ----------- | ---------------------------------------------------------------- |
-| `config/`   | Paramètres de connexion aux bases                                |
-| `includes/` | Connexion PDO, authentification, en-tête et pied de page communs |
-| `sql/`      | Scripts de création de la base et d'intégration des données      |
-| `images/`   | Photographies du site                                            |
+| Dossier     | Contenu                                                                   |
+| ----------- | ------------------------------------------------------------------------- |
+| `api/`      | Points d'entrée JSON appelés par le JavaScript                            |
+| `config/`   | Paramètres de connexion aux bases                                         |
+| `docs/`     | Livrables du projet en PDF : manuel, charte, documentations               |
+| `images/`   | Photographies du site                                                     |
+| `includes/` | Connexion PDO, authentification, accès aux données, en-tête et pied de page |
+| `sql/`      | Scripts de création de la base et d'intégration des données               |
 
 ## Licence
 

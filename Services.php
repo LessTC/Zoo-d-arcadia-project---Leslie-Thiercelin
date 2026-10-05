@@ -37,11 +37,6 @@ foreach ($lignes as $image) {
 // la largeur, trois maximum pour que les cartes restent lisibles.
 $colonnes = max(2, min(count($visites), 3));
 
-// Onglet à ouvrir au chargement, transmis dans l'URL après chaque action.
-$ongletActif = $_GET['onglet'] ?? 'avis';
-
-// titre
-
 $titrePage       = 'Nos services — Zoo d’Arcadia';
 $descriptionPage = 'Les services proposés aux visiteurs du Zoo d’Arcadia.';
 $classeBody      = '';

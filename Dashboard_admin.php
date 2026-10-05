@@ -897,7 +897,18 @@ require __DIR__ . '/includes/header.php';
                       <div class="col-12 col-md-6">
                         <label for="animalState" class="form-label">État</label>
                         <select id="animalState" name="health_state" class="form-select">
-                          <?php foreach (['en bonne santé', 'suivi régulier', 'suivi attentif', 'en soins'] as $etatPossible): ?>
+                          <?php
+                            $etatsPossibles = ['en bonne santé', 'suivi régulier', 'suivi attentif', 'en soins'];
+                            // Un état hors de cette liste (ex. « suivi quotidien », issu du jeu
+                            // de données initial) est ajouté pour être conservé : sans ça, le
+                            // menu sélectionnerait le premier choix et l'enregistrement
+                            // remplacerait l'état en silence.
+                            $etatActuel = $animalEdite['health_state'] ?? '';
+                            if ($etatActuel !== '' && !in_array($etatActuel, $etatsPossibles, true)) {
+                                $etatsPossibles[] = $etatActuel;
+                            }
+                          ?>
+                          <?php foreach ($etatsPossibles as $etatPossible): ?>
                             <option value="<?= e($etatPossible) ?>"
                               <?= ($animalEdite['health_state'] ?? '') === $etatPossible ? 'selected' : '' ?>>
                               <?= e($etatPossible) ?>
