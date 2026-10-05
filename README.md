@@ -24,6 +24,17 @@ documentation technique.
 - Comptes rendus vétérinaires et suivi de l'alimentation
 - Compteur de consultations par animal, stocké en base NoSQL
 
+## Documentation
+
+Les livrables du projet sont réunis dans le dossier [`docs/`](docs/) :
+
+| Document                                                                           | Contenu                                                                     |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [Manuel d'utilisation](docs/Manuel_utilisation_Zoo_Arcadia.pdf)                     | Présentation de l'application et identifiants des trois espaces professionnels |
+| [Charte graphique](docs/Charte_Zoo_Arcadia.pdf)                                     | Palette, typographie, wireframes et maquettes (bureau et mobile)             |
+| [Documentation technique](docs/Documentation_technique_Zoo_Arcadia.pdf)             | Choix technologiques, modèle de données, diagrammes, déploiement             |
+| [Documentation de gestion de projet](docs/Documentation_gestion_de_projet_Zoo_Arcadia.pdf) | Méthode de travail, kanban, déroulé du projet                        |
+
 ## Prérequis
 
 - **XAMPP** avec PHP 8.2 ou supérieur (Apache et MySQL / MariaDB)
