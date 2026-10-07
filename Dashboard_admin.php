@@ -1050,7 +1050,7 @@ require __DIR__ . '/includes/header.php';
                     <thead>
                       <tr>
                         <th>Date</th><th>Animal</th><th>Vétérinaire</th>
-                        <th>État</th><th>Nourriture</th><th>Détail</th>
+                        <th>État</th><th>Recommandation nourriture</th><th>Détail</th>
                       </tr>
                     </thead>
                     <tbody>

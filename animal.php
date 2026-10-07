@@ -72,7 +72,7 @@ require __DIR__ . '/includes/header.php';
                 Le <?= e(date('d/m/Y', strtotime($dernierRapport['visit_date']))) ?> —
                 <?= e($dernierRapport['animal_state']) ?>
                 <?php if ($dernierRapport['proposed_food']): ?>
-                  · nourriture proposée : <?= e($dernierRapport['proposed_food']) ?>
+                  · Recommandation nourriture : <?= e($dernierRapport['proposed_food']) ?>
                   <?php if ($dernierRapport['food_grams']): ?>
                     (<?= e((string) $dernierRapport['food_grams']) ?> g)
                   <?php endif; ?>
