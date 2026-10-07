@@ -224,7 +224,7 @@ require __DIR__ . '/includes/header.php';
                   </div>
                 
                   <div class="col-8 col-md-4">
-                    <label for="nourriture" class="form-label">Nourriture proposée</label>
+                    <label for="nourriture" class="form-label">Recommandation nourriture</label>
                     <input id="nourriture" name="proposed_food" type="text" class="form-control"
                            placeholder="viande, feuilles…">
                   </div>
@@ -255,7 +255,7 @@ require __DIR__ . '/includes/header.php';
                   <thead>
                     <tr>
                       <th>Date</th><th>Animal</th><th>État</th>
-                      <th>Nourriture</th><th>Grammage</th><th>Vétérinaire</th>
+                      <th>Recommandation nourriture</th><th>Grammage</th><th>Vétérinaire</th>
                     </tr>
                   </thead>
                   <tbody>
