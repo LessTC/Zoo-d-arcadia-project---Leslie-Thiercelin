@@ -4,7 +4,7 @@
 :root {
   /* Couleurs principales */
   --green-dark: #556b2f;
-  --green-dark-rgb: 85, 107, 47; /* = --green-dark, pour les rgba() */
+  --green-dark-rgb: 85, 107, 47;
   --green-laurel: #6b8e23;
   --green-footer: #455a26;
   --cream: #fafae6;
@@ -39,9 +39,6 @@ body {
   font-family: var(--font-body);
   color: var(--text-dark);
   background: var(--cream);
-  /* Footer collé en bas de l'écran quand le contenu est court :
-     la page occupe au moins toute la hauteur visible, et main
-     absorbe l'espace restant entre le header et le footer. */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -71,8 +68,6 @@ a:hover {
   background: var(--green-dark);
   min-height: 64px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  /* Garde le menu déplié au-dessus des sections en position: relative
-     qui suivent le header (hero, fonds d'habitat, etc.) */
   position: relative;
   z-index: 1030;
 }
@@ -131,7 +126,6 @@ a:hover {
 
 .navbar .navbar-collapse.show {
   display: block !important;
-  /* Même rendu que le burger : vert de la navbar + voile blanc 12% */
   background-color: var(--green-dark);
   background-image: linear-gradient(
     rgba(255, 255, 255, 0.12),
@@ -171,7 +165,7 @@ a:hover {
   background: rgba(255, 69, 0, 0.85);
   color: var(--text-light);
 }
-/* Variante adoucie, utilisée sur le bloc « Infos pratiques » de l'accueil */
+/* Variante adoucie -> bloc « Infos pratiques » de l'accueil */
 .panel-red-soft {
   background: rgba(255, 69, 0, 0.5);
   color: var(--text-light);
@@ -193,7 +187,7 @@ a:hover {
   color: var(--text-light);
 }
 
-/* Carte « Avis » de l'accueil : teinte distincte des autres cartes */
+/* Carte « Avis » de l'accueil */
 .card-avis {
   background: #e3e6c4;
 }
@@ -209,26 +203,22 @@ a:hover {
 
 /* ==============================
    COMPOSANTS BOOTSTRAP AUX COULEURS DE LA CHARTE
-   On surcharge les variables CSS exposées par Bootstrap plutôt que
-   ses règles : pas de !important, et le comportement du composant
-   (états, responsive) reste celui du framework.
-   ============================== */
+     ============================== */
 
 /* Onglets des espaces connectés (admin, soigneur, vétérinaire) */
 .nav-pills {
   --bs-nav-link-color: var(--green-dark);
-  /* Survol plus foncé que l'état normal : 7,1:1, conforme WCAG AA et AAA */
   --bs-nav-link-hover-color: var(--green-footer);
   --bs-nav-pills-link-active-bg: var(--green-dark);
   --bs-nav-pills-link-active-color: var(--text-light);
 }
 
-/* Barres de progression (statistiques du dashboard admin) */
+/* Barres de progression (dashboard admin) */
 .progress {
   --bs-progress-bar-bg: var(--green-dark);
 }
 
-/* Anneau de focus des champs : repère clavier, il doit rester visible */
+/* focus des champs : repère clavier */
 .form-control:focus,
 .form-select:focus {
   border-color: var(--green-laurel);
@@ -263,12 +253,11 @@ a:hover {
   object-fit: cover;
 }
 
-/* Photos des services : même gabarit pour toutes, quelle que soit la
-   forme de l'original. */
+/* Photos des services */
 .photo-service {
   width: 100%;
   height: 220px;
-  object-fit: cover; /*remplit le cadre en rognant le surplus, sans jamais déformer l'image.*/
+  object-fit: cover;
 }
 
 /* ==============================
@@ -285,8 +274,7 @@ a:hover {
 
 /* Fond de repli : sert à la liste des habitats, et à tout habitat créé
    depuis l'espace administrateur pour lequel la charte n'a pas prévu de
-   dégradé dédié. Placé AVANT les fonds spécifiques : à spécificité égale,
-   c'est la dernière règle écrite qui gagne. */
+   dégradé dédié. */
 .bg-habitat {
   background: linear-gradient(180deg, #6f8f5a 0%, #455a26 100%);
   min-height: 100vh;
@@ -345,8 +333,6 @@ a:hover {
   position: relative;
   z-index: 1;
 }
-/* Le titre passe en clair : la règle h1…h5 le mettrait en vert foncé,
-   illisible sur l'image de fond */
 .hero h1 {
   color: var(--text-light);
 }
@@ -366,8 +352,7 @@ a:hover {
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
 }
-/* Le contenu passe au-dessus du voile sombre. On exclut le header :
-   il a son propre z-index (voir .navbar) pour rester au-dessus de tout. */
+
 .bg-connexion > main,
 .bg-connexion > footer {
   position: relative;
@@ -398,7 +383,7 @@ footer {
   padding: 1rem;
 }
 
-/* Page Contact : fond image + overlay (comme Connexion) */
+/* Page Contact */
 .bg-contact {
   position: relative;
   min-height: 100vh;
@@ -411,7 +396,7 @@ footer {
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.38));
 }
-/* Idem page Contact : le header est exclu, il gère son propre empilement. */
+
 .bg-contact > main,
 .bg-contact > footer {
   position: relative;
@@ -422,7 +407,7 @@ footer {
 .card-contact {
   border: 0;
   border-radius: 16px;
-  background: rgba(85, 107, 47, 0.85); /* vert olive translucide */
+  background: rgba(85, 107, 47, 0.85);
   color: #fff;
 }
 .card-contact .form-label {
@@ -435,7 +420,7 @@ footer {
 /* Hero des services (image + overlay léger) */
 .bg-services {
   position: relative;
-  min-height: 220px; /* hauteur hero */
+  min-height: 220px;
   background: url("images/steve-payne-ygYxOk1PKcU-unsplash.jpg") center/cover
     no-repeat;
 }
@@ -452,7 +437,7 @@ footer {
 
 /** espace admin **/
 
-/* Harmonise les cartes de tableau de bord */
+/* cartes de tableau de bord */
 .card h2,
 .card h3 {
   color: var(--green-dark);
@@ -460,7 +445,6 @@ footer {
 
 /* Fond général de l’espace Admin */
 .admin-layout {
-  /* Dégradé brun-rouge, construit autour de la teinte d'origine #8e3f33 */
   background: linear-gradient(
     180deg,
     #a85246 0%,
@@ -474,14 +458,13 @@ footer {
 
 /* Harmonise les cartes sur fond sombre */
 .admin-layout .card {
-  background: #fff; /* cartes claires pour contraster */
+  background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
 
 /* Fond général du dashboard vétérinaire */
 .vet-layout {
-  /* Dégradé ancré sur la charte : --orange-peru vers --brown-saddle */
   background: linear-gradient(
     180deg,
     #e0a86a 0%,
@@ -502,7 +485,6 @@ footer {
 
 /* Fond général du dashboard Employé */
 .employe-layout {
-  /* Dégradé vert ancré sur --green-laurel, plus clair que l'olive précédent */
   background: linear-gradient(
     180deg,
     #9ab850 0%,

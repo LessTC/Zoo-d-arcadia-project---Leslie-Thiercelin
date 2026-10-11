@@ -44,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ancien['message'],
         ]);
 
-        // US 10 : la demande est aussi transmise par courriel au zoo, pour
-        // que l'employé puisse répondre directement au visiteur.
-        envoyer_courriel(
+          envoyer_courriel(
             'contact@arcadia.fr',
             'Nouveau message : ' . $ancien['subject'],
             "Un visiteur a écrit depuis le formulaire de contact.\n\n"

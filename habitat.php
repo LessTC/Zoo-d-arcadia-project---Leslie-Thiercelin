@@ -10,7 +10,7 @@ require __DIR__ . '/includes/fonctions.php';
 $habitatId = (int) ($_GET['id'] ?? 0);
 
 // La valeur vient de l'URL, donc du visiteur : prepare() + execute() est
-// obligatoire. La valeur voyage à part et ne peut pas devenir du SQL.
+// obligatoire.
 $requete = db()->prepare('SELECT id, name, description FROM habitats WHERE id = ?');
 $requete->execute([$habitatId]);
 $habitat = $requete->fetch();
@@ -36,8 +36,6 @@ $animaux = $requete->fetchAll();
 
 $titrePage       = $habitat['name'] . ' — Zoo d’Arcadia';
 $descriptionPage = 'L’habitat « ' . $habitat['name'] . ' » du Zoo d’Arcadia et les animaux qui y vivent.';
-// Deux classes : bg-habitat sert de repli, et bg-savane / bg-jungle /
-// bg-marais prend le dessus quand la charte prévoit un dégradé dédié.
 $classeBody      = 'bg-habitat bg-' . strtolower($habitat['name']);
 
 require __DIR__ . '/includes/header.php';
@@ -96,8 +94,7 @@ require __DIR__ . '/includes/header.php';
     </div>
   </main>
 
-<!-- Fiche animal en modale. Le contenu est vide au chargement : il est
-     rempli par script.js à partir de api/animal.php, au moment du clic. -->
+<!-- Fiche animal en modale. -->
 <div class="modal fade" id="modaleAnimal" tabindex="-1" aria-labelledby="modaleAnimalTitre" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">

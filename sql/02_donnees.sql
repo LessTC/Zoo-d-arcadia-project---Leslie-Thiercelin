@@ -1,17 +1,6 @@
 -- =====================================================================
 --  Zoo d'Arcadia — Jeu de données initial
 --
---  Reprend exactement le contenu affiché aujourd'hui en dur dans les
---  pages HTML, pour que la bascule vers PHP ne change rien à l'écran.
---
---  Aucun compte utilisateur ici : un mot de passe, même haché, n'a rien
---  à faire dans un fichier versionné sur Git. Les comptes sont créés
---  par le script sql/03_create_user.php.
---
---  Comme 01_schema.sql, ce script ne choisit pas la base : il agit sur
---  celle qu'on lui désigne à l'exécution. Il doit être lancé APRÈS
---  01_schema.sql, qui crée les tables.
---
 --  Exécution :  mysql -u root arcadia < sql/02_donnees.sql
 -- =====================================================================
 
@@ -41,7 +30,7 @@ INSERT INTO habitats (id, name, description, image) VALUES
 
 
 -- ---------------------------------------------------------------------
---  Animaux — repris à l'identique de savane.html, jungle.html, marais.html
+--  Animaux
 -- ---------------------------------------------------------------------
 INSERT INTO animals (name, species, description, diet, health_state, habitat_id, image, image_alt) VALUES
   -- Savane
@@ -100,7 +89,7 @@ INSERT INTO animals (name, species, description, diet, health_state, habitat_id,
 
 
 -- ---------------------------------------------------------------------
---  Services — repris de Services.html
+--  Services
 -- ---------------------------------------------------------------------
 INSERT INTO services (id, name, category, slug, schedule, description) VALUES
   (1, 'Visite guidée (gratuit)', 'visite', 'visite-guidee', '10h – 17h',
@@ -112,11 +101,7 @@ INSERT INTO services (id, name, category, slug, schedule, description) VALUES
 
 
 -- ---------------------------------------------------------------------
---  Avis — repris d'index.html.
---  Les deux premiers sont validés (donc visibles publiquement), le
---  troisième est en attente : il sert à tester l'écran de modération
---  de l'espace employé.
---  approved_by reste NULL : aucun compte n'existe encore à ce stade.
+--  Avis
 -- ---------------------------------------------------------------------
 INSERT INTO reviews (nickname, title, comment, is_approved, created_at) VALUES
   ('A.', 'Fantastique',
@@ -129,7 +114,7 @@ INSERT INTO reviews (nickname, title, comment, is_approved, created_at) VALUES
 
 
 -- ---------------------------------------------------------------------
---  Images des services. La restauration en a deux, les visites une seule.
+--  Images des services.
 -- ---------------------------------------------------------------------
 INSERT INTO service_images (service_id, path, alt, position) VALUES
   (1, 'images/steve-payne-ygYxOk1PKcU-unsplash.jpg',      'Panda roux nourri par un guide', 1),

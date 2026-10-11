@@ -2,15 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * Compteur de consultations des fiches animaux (US11).
- *
- * Pourquoi MongoDB et pas MySQL ? Ce compteur n'a aucune relation avec le
- * reste des données : c'est un simple couple « identifiant d'animal →
- * nombre de vues », incrémenté à chaque affichage. Pas de jointure, pas de
- * schéma à faire évoluer, une écriture très fréquente et très simple.
- * C'est exactement le terrain d'une base documentaire.
- */
+/*Compteur de consultations des fiches animaux (US11). */
 
 /** Charge la configuration une seule fois. */
 function mongo_config(): array
@@ -36,13 +28,7 @@ function mongo(): MongoDB\Driver\Manager
     return $manager;
 }
 
-/**
- * Ajoute une vue à la fiche d'un animal.
- *
- * En cas de panne de MongoDB, on consigne l'incident et on continue :
- * un compteur indisponible ne doit JAMAIS empêcher un visiteur de lire
- * une fiche. La statistique est secondaire, le contenu est prioritaire.
- */
+/*Ajoute une vue à la fiche d'un animal.*/
 function incrementer_consultation(int $animalId): void
 {
     try {
@@ -59,10 +45,7 @@ function incrementer_consultation(int $animalId): void
     }
 }
 
-/**
- * Renvoie [identifiant d'animal => nombre de vues], du plus vu au moins vu.
- * Tableau vide si MongoDB est injoignable.
- */
+/*Renvoie [identifiant d'animal => nombre de vues], du plus vu au moins vu.*/
 function consultations(): array
 {
     try {

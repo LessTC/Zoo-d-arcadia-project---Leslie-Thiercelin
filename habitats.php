@@ -7,7 +7,6 @@ require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/fonctions.php';
 
 // Requête fixe, aucune valeur ne vient du visiteur : query() suffit.
-// prepare() n'aurait rien à protéger ici.
 $habitats = db()->query('SELECT id, name, image FROM habitats ORDER BY name')->fetchAll();
 
 $titrePage       = 'Nos habitats — Zoo d’Arcadia';

@@ -1,16 +1,8 @@
 <?php
 
-/**
- * Panneau « Messages reçus », partagé par l'espace employé et l'espace
+/*Panneau « Messages reçus », partagé par l'espace employé et l'espace
  * administrateur. Il ne contient que de l'affichage : les données et le
- * traitement sont dans includes/messages_contact.php.
- *
- * La page qui l'inclut doit définir avant l'inclusion :
- *   $messagesContact — la liste renvoyée par messages_contact()
- *   $nonLus          — le décompte renvoyé par messages_non_lus()
- *   $pageCourante    — le nom du fichier appelant, pour l'action des
- *                      formulaires : « Espace_soigneur.php » par exemple
- */
+ * traitement sont dans includes/messages_contact.php. */
 ?>
 <div class="card p-4">
   <h2 class="h5 mb-3">

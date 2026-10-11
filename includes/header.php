@@ -1,25 +1,6 @@
 <?php
 
-/**
- * En-tête commun à toutes les pages du site.
- *
- * Même principe que style.css : le header n'est écrit qu'une fois. Le jour
- * où tu ajoutes une entrée au menu, tu modifies ce seul fichier et les
- * pages du site suivent.
- *
- * La page qui l'inclut peut définir AVANT l'inclusion :
- *   $titrePage       — le titre affiché dans l'onglet du navigateur
- *   $descriptionPage — la phrase de description pour les moteurs de recherche
- *   $classeBody      — la classe CSS du <body>, ex. « bg-savane »
- *
- * L'opérateur ?? fournit une valeur de repli si la variable n'existe pas,
- * ce qui évite une erreur sur une page qui aurait oublié de la définir.
- *
- * Le bloc de droite s'adapte tout seul : icône de connexion pour un
- * visiteur, prénom et bouton Déconnexion pour une personne identifiée.
- * Un seul en-tête sert donc au site public et au back-office.
- */
-
+/*En-tête commun à toutes les pages du site.*/
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/fonctions.php';
 

@@ -68,7 +68,7 @@ try {
     $existant = $requete->fetch();
 
     // ------------------------------------------------------------------
-    //  Cas 1 : le compte existe — on redéfinit son mot de passe.
+    //  Compte existant — redéfiniton de mot de passe.
     // ------------------------------------------------------------------
     if ($existant) {
         echo "\nCompte existant : {$existant['first_name']} {$existant['last_name']}"
@@ -87,12 +87,11 @@ try {
     }
 
     // ------------------------------------------------------------------
-    //  Cas 2 : adresse inconnue — on crée le compte.
+    //  Adresse inconnue — création de compte.
     // ------------------------------------------------------------------
     echo "\nAucun compte avec cette adresse : création d'un nouveau compte.\n\n";
 
-    // On lit les rôles en base plutôt que de les écrire en dur :
-    // si un rôle est ajouté un jour, ce script suit automatiquement.
+
     $roles = $pdo->query('SELECT id, label FROM roles ORDER BY id')->fetchAll();
 
     if (!$roles) {
