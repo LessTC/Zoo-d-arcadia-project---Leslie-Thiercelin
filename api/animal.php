@@ -25,15 +25,12 @@ if ($animal === null) {
     exit;
 }
 
-// US 11 : la consultation est comptée ici aussi. Sans cette ligne, une
-// fiche consultée en modale ne serait jamais comptabilisée, puisque
-// aucune page n'est rechargée à ce moment-là.
+// US 11 : la consultation est comptée ici aussi.
+
 incrementer_consultation((int) $animal['id']);
 
 $rapport = animal_dernier_rapport((int) $animal['id']);
 
-// Les clés sont renommées en français : le JSON est une interface, elle
-// n'a pas à exposer les noms de colonnes de la base.
 echo json_encode([
     'id'          => (int) $animal['id'],
     'nom'         => $animal['name'],
