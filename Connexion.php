@@ -5,7 +5,6 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
 
-// Déjà connecté ? Inutile de redemander : on l'envoie chez lui.
 if (est_connecte()) {
     header('Location: ' . page_accueil_role(utilisateur_connecte()['role']));
     exit;

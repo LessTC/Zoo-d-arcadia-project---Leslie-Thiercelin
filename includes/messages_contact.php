@@ -2,14 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * Boîte de réception des messages du formulaire de contact (US 10).
- *
- * L'énoncé confie leur traitement à l'employé. L'administrateur y accède
- * également, pour garder la supervision de ce qui est traité — d'où ce
- * fichier partagé : le même panneau vit dans deux espaces, mais son code
- * n'existe qu'ici. Une correction profite aux deux.
- */
+/*Boîte de réception des messages du formulaire de contact (US 10). */
 
 require_once __DIR__ . '/db.php';
 
@@ -29,15 +22,6 @@ function messages_non_lus(array $messages): int
     return count(array_filter($messages, static fn(array $m): bool => !$m['is_read']));
 }
 
-/**
- * Traite les actions de la boîte de réception, puis redirige vers la page
- * appelante. Ne fait rien si l'action reçue ne la concerne pas : chaque
- * espace a ses propres actions, elles cohabitent sans se gêner.
- *
- * $page est le nom du fichier vers lequel rediriger, par exemple
- * « Espace_soigneur.php ». C'est ce paramètre qui rend la fonction
- * utilisable depuis les deux espaces.
- */
 function traiter_action_message(string $page): void
 {
     $action = $_POST['action'] ?? '';

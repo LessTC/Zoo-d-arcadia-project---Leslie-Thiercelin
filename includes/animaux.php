@@ -3,15 +3,13 @@
 declare(strict_types=1);
 
 /**
- * Lecture d'une fiche animal, partagée par deux points d'affichage.
- *
- * La page animal.php et le point d'entrée JSON api/animal.php lisent
- * exactement la même donnée.
+ * Lecture d'une fiche animal, partagée par deux points d'affichage (La page animal.php et le point d'entrée JSON api/animal).
  */
 
 require_once __DIR__ . '/db.php';
 
-/** La fiche d'un animal, ou null si l'identifiant n'existe pas. */
+/* La fiche d'un animal, ou null si l'identifiant n'existe pas. */
+
 function animal_detail(int $animalId): ?array
 {
     $requete = db()->prepare(
@@ -26,7 +24,8 @@ function animal_detail(int $animalId): ?array
     return $requete->fetch() ?: null;
 }
 
-/** Le dernier passage du vétérinaire sur cet animal, s'il y en a eu un. */
+/*passage du vétérinaire*/
+
 function animal_dernier_rapport(int $animalId): ?array
 {
     $requete = db()->prepare(

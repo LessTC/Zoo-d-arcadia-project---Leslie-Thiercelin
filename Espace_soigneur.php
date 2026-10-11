@@ -6,20 +6,16 @@ require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
 require __DIR__ . '/includes/messages_contact.php';
 
-// LA BARRIÈRE. Première instruction exécutable de la page, avant le
-// moindre affichage : si la personne n'est pas un employé
-// connecté, elle est redirigée ou refusée, et rien ne s'affiche.
+// sécurité 1
 $utilisateur = exiger_role('Employe');
 
 // --- Actions de modération ------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action']  ?? '';
-    // Conversion en entier : quoi qu'on nous envoie, on obtient un nombre.
     $avisId = (int) ($_POST['avis_id'] ?? 0);
 
     if ($avisId > 0 && $action === 'valider') {
-        // approved_by garde la trace de QUI a validé, et quand.
         $requete = db()->prepare(
             'UPDATE reviews SET is_approved = 1, approved_by = ? WHERE id = ?'
         );
@@ -61,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $serviceId = (int) ($_POST['service_id'] ?? 0);
 
         if ($serviceId > 0) {
-            // Les images liées partent avec, grâce au ON DELETE CASCADE.
             $requete = db()->prepare('DELETE FROM services WHERE id = ?');
             $requete->execute([$serviceId]);
         }
@@ -77,11 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nourriture = trim($_POST['food'] ?? '');
         $unite      = $_POST['unit'] ?? 'kg';
     
-        // On accepte « 2,5 » comme « 2.5 » : en France on tape une virgule,
-        // mais MySQL attend un point.
         $quantite = (float) str_replace(',', '.', (string) ($_POST['quantity'] ?? '0'));
     
-        // Liste blanche : on n'enregistre que des unités qu'on a prévues.
         if (!in_array($unite, ['kg', 'g', 'L'], true)) {
             $unite = 'kg';
         }
@@ -104,12 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Boîte de réception partagée avec l'espace administrateur : le
-    // traitement vit dans includes/messages_contact.php.
+    // Boîte de réception partagée avec l'espace administrateur
     traiter_action_message('Espace_soigneur.php');
 }
 
-// Les avis en attente : ceux que personne n'a encore tranchés.
+// Avis en attente
 $avisEnAttente = db()->query(
     'SELECT id, nickname, title, comment, created_at
      FROM reviews
@@ -117,10 +108,9 @@ $avisEnAttente = db()->query(
      ORDER BY created_at DESC'
 )->fetchAll();
 
-// Tous les services, pour le menu déroulant.
+// Tous les services (menu déroulant)
 $services = db()->query('SELECT id, name FROM services ORDER BY id')->fetchAll();
 
-// Celui qu'on est en train de modifier, s'il y en a un.
 $serviceEdite = null;
 $idDemande = (int) ($_GET['service'] ?? 0);
 
@@ -132,7 +122,7 @@ if ($idDemande > 0) {
     $serviceEdite = $requete->fetch() ?: null;
 }
 
-// Les animaux, pour le menu déroulant.
+// Les animaux (menu déroulant)
 $animaux = db()->query(
     'SELECT a.id, a.name, h.name AS habitat
      FROM animals a
@@ -140,7 +130,7 @@ $animaux = db()->query(
      ORDER BY h.name, a.name'
 )->fetchAll();
 
-// Les 20 derniers repas enregistrés, tous soigneurs confondus.
+// Les 20 derniers repas enregistrés
 $historique = db()->query(
     'SELECT f.feed_date, f.feed_time, f.food, f.quantity, f.unit, a.name AS animal
      FROM feedings f
@@ -149,14 +139,11 @@ $historique = db()->query(
      LIMIT 20'
 )->fetchAll();
 
-// US 10 : « L'employé peut répondre à la demande directement par mail. »
-// La boîte de réception est partagée avec l'espace administrateur, qui
-// garde la supervision : le code vit dans includes/messages_contact.php.
+
 $messagesContact = messages_contact();
 $nonLus          = messages_non_lus($messagesContact);
 $pageCourante    = 'Espace_soigneur.php';
 
-// Onglet à ouvrir au chargement, transmis dans l'URL après chaque action.
 $ongletActif = $_GET['onglet'] ?? 'avis';
 
 $titrePage  = 'Espace Employé — Zoo d’Arcadia';

@@ -5,14 +5,12 @@ declare(strict_types=1);
 require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/fonctions.php';
 
-// Messages d'erreur à afficher, et valeurs déjà saisies pour ne pas
-// obliger le visiteur à tout retaper si quelque chose cloche.
+// Messages d'erreur à afficher + valeurs déjà saisies
 $erreurs = [];
 $ancien  = ['name' => '', 'subject' => '', 'message' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // trim() retire les espaces avant et après : « Marie  » devient « Marie ».
     $ancien['name']    = trim($_POST['name'] ?? '');
     $ancien['subject'] = trim($_POST['subject'] ?? '');
     $ancien['message'] = trim($_POST['message'] ?? '');
@@ -44,22 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// US 1 : l'accueil doit mentionner les habitats ET les animaux du zoo.
-// Les cartes sont construites depuis la base, et non écrites en dur : un
-// habitat créé depuis l'espace administrateur apparaît ici tout seul.
+// Les cartes sont construites depuis la base
 $habitats = db()->query('SELECT id, name, image FROM habitats ORDER BY name')->fetchAll();
 
-// Une seule requête pour tous les animaux, rangés ensuite par habitat —
-// plutôt qu'une requête par carte, qui multiplierait les allers-retours
-// vers la base. On range par identifiant d'habitat, pas par nom : un nom
-// peut être renommé depuis l'espace administrateur, un identifiant non.
+// Une seule requête pour tous les animaux, rangés ensuite par habitat
 $animauxParHabitat = [];
 $lignes = db()->query('SELECT id, name, habitat_id FROM animals ORDER BY habitat_id, id');
 foreach ($lignes as $ligne) {
     $animauxParHabitat[$ligne['habitat_id']][] = $ligne;
 }
 
-// Nombre de noms affichés avant le repli. Au-delà, un bouton déplie le reste.
+// Nombre de noms affichés avant le repli.
 $animauxVisibles = 3;
 
 $avis = db()->query(
@@ -134,8 +127,6 @@ require __DIR__ . '/includes/header.php';
                 $animaux  = $animauxParHabitat[$unHabitat['id']] ?? [];
                 $visibles = array_slice($animaux, 0, $animauxVisibles);
                 $restants = array_slice($animaux, $animauxVisibles);
-                // Identifiant unique par carte, sinon un clic déplierait
-                // les listes de toutes les cartes en même temps.
                 $idRepli  = 'autres-habitat-' . (int) $unHabitat['id'];
               ?>
               <div class="col">

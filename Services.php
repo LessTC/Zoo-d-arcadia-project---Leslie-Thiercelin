@@ -13,7 +13,7 @@ $visites = db()->query(
      ORDER BY id"
 )->fetchAll();
 
-// La restauration : fetch() et non fetchAll(), on n'en attend qu'une.
+// La restauration 
 $restauration = db()->query(
     "SELECT id, name, slug, description
      FROM services
@@ -22,7 +22,7 @@ $restauration = db()->query(
      LIMIT 1"
 )->fetch();
 
-// TOUTES les images en UNE seule requête, qu'on range ensuite par service.
+// images en 1 seule requête
 $imagesParService = [];
 $lignes = db()->query(
     'SELECT service_id, path, alt
@@ -33,8 +33,7 @@ foreach ($lignes as $image) {
     $imagesParService[$image['service_id']][] = $image;
 }
 
-// Deux colonnes minimum pour qu'un service seul ne s'étale pas sur toute
-// la largeur, trois maximum pour que les cartes restent lisibles.
+//affichage colonnes
 $colonnes = max(2, min(count($visites), 3));
 
 $titrePage       = 'Nos services — Zoo d’Arcadia';

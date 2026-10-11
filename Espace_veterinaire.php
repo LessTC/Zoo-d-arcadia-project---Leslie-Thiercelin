@@ -5,15 +5,12 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/fonctions.php';
 
-// LA BARRIÈRE. Première instruction exécutable de la page, avant le
-// moindre affichage : si la personne n'est pas un vétérinaire
-// connecté, elle est redirigée ou refusée, et rien ne s'affiche.
+// sécurité 1
 $utilisateur = exiger_role('Veterinaire');
 
-// Onglet à rouvrir après chaque action.
 $ongletActif = $_GET['onglet'] ?? 'reports';
 
-// Les animaux, pour les menus déroulants.
+// Les animaux (menus déroulants)
 $animaux = db()->query(
     'SELECT a.id, a.name, h.name AS habitat
      FROM animals a
@@ -21,7 +18,7 @@ $animaux = db()->query(
      ORDER BY h.name, a.name'
 )->fetchAll();
 
-// L'historique des comptes rendus, tous vétérinaires confondus.
+// L'historique des comptes rendus
 $rapports = db()->query(
     'SELECT r.visit_date, r.animal_state, r.proposed_food, r.food_grams,
             r.state_details, a.name AS animal, u.first_name AS veterinaire
@@ -62,8 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $detail !== '' ? $detail : null,
             ]);
 
-            // LA BOUCLE : l'état courant de l'animal, celui qu'affichent les
-            // pages publiques, reflète le dernier compte rendu du vétérinaire.
+            // Etat courant de l'animal
             $requete = db()->prepare('UPDATE animals SET health_state = ? WHERE id = ?');
             $requete->execute([$etat, $animalId]);
 
@@ -95,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Les habitats, pour le menu déroulant.
+// Les habitats (menu déroulant).
 $habitats = db()->query('SELECT id, name FROM habitats ORDER BY name')->fetchAll();
 
 // Les derniers commentaires laissés sur les habitats.
@@ -108,11 +104,7 @@ $commentaires = db()->query(
      LIMIT 15'
 )->fetchAll();
 
-// Les repas saisis par les soigneurs — le vétérinaire les consulte, il ne
-// les modifie pas : chaque rôle a son périmètre.
-// US 8 : « Le vétérinaire voit également sur son espace ET PAR ANIMAL tout
-// ce que l'animal a pu manger. » D'où le filtre : sans lui, il devrait
-// parcourir la liste complète pour retrouver les repas d'une bête.
+// Les repas saisis par les soigneurs
 $filtreAnimalId = (int) ($_GET['repas_animal'] ?? 0);
 
 $sqlRepas = 'SELECT f.feed_date, f.feed_time, f.food, f.quantity, f.unit,
@@ -134,7 +126,7 @@ $requete = db()->prepare($sqlRepas);
 $requete->execute($parametresRepas);
 $repas = $requete->fetchAll();
 
-// Le nom de l'animal filtré, pour l'afficher dans le titre du tableau.
+// Le nom de l'animal filtré
 $nomAnimalFiltre = '';
 if ($filtreAnimalId > 0) {
     foreach ($animaux as $unAnimal) {

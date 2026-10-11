@@ -2,19 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * Envoi de courriels.
- *
- * XAMPP n'expédie aucun message sous Windows : la fonction mail() de PHP
- * échoue en silence faute de serveur SMTP. Plutôt que de laisser croire
- * qu'un courriel est parti, on l'écrit dans un fichier du dossier
- * courriels/ — daté, lisible, vérifiable.
- *
- * Le code appelant est ainsi identique à ce qu'il serait en production :
- * seule cette fonction changera au déploiement, en remplaçant l'écriture
- * du fichier par un envoi SMTP réel. Le reste de l'application n'aura pas
- * une ligne à modifier.
- */
+/*Envoi de courriels -> écrit dans un fichier du dossier courriels/. */
 
 function envoyer_courriel(string $destinataire, string $sujet, string $message): bool
 {
@@ -25,9 +13,6 @@ function envoyer_courriel(string $destinataire, string $sujet, string $message):
         return false;
     }
 
-    // Le nom du fichier ne doit contenir que des caractères sûrs : on
-    // remplace tout le reste, sinon une adresse malformée pourrait
-    // fabriquer un chemin vers un autre dossier.
     $adresseSure = preg_replace('/[^a-z0-9]+/i', '-', $destinataire);
     $chemin      = $dossier . '/' . date('Y-m-d_His') . '_' . $adresseSure . '.txt';
 

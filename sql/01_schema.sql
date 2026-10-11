@@ -8,12 +8,7 @@
 --  ATTENTION : ce script est ré-exécutable, mais il SUPPRIME les tables
 --  existantes avant de les recréer. Toute donnée saisie est perdue.
 --
---  Ce script ne crée PAS la base : il agit sur celle qu'on lui désigne.
---  Le nom de la base est une décision d'installation, pas de schéma —
---  en local elle s'appelle « arcadia », chez un hébergeur mutualisé le
---  nom est souvent imposé (« compte_arcadia »). Le même fichier sert
---  ainsi partout, sans retouche.
---
+--  Ce script ne crée pas la base : il agit sur celle qu'on lui désigne.--
 --  Créer la base au préalable, en utf8mb4 :
 --    CREATE DATABASE arcadia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 --
@@ -34,7 +29,7 @@ DROP TABLE IF EXISTS services;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 
--- Vestiges de l'ébauche francophone, retirés définitivement.
+-- OLD
 DROP TABLE IF EXISTS alimentation;
 DROP TABLE IF EXISTS commentaire_habitat;
 DROP TABLE IF EXISTS rapport_veterinaire;
@@ -48,8 +43,6 @@ DROP TABLE IF EXISTS role;
 
 -- ---------------------------------------------------------------------
 --  roles : les 3 profils du back-office
---  Table dédiée plutôt qu'une colonne ENUM : ajouter un profil ne
---  demande alors aucune modification de structure.
 -- ---------------------------------------------------------------------
 CREATE TABLE roles (
   id    TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -61,12 +54,6 @@ CREATE TABLE roles (
 
 -- ---------------------------------------------------------------------
 --  users : comptes du back-office, créés par l'administrateur (US6/US9)
---
---  La colonne s'appelle password_hash et non password : elle ne contient
---  QUE l'empreinte produite par la fonction PHP password_hash().
---  Jamais le mot de passe en clair, jamais un chiffrement réversible.
---  255 caractères : bcrypt en occupe 60, mais l'algorithme par défaut
---  de PHP peut évoluer vers des empreintes plus longues.
 -- ---------------------------------------------------------------------
 CREATE TABLE users (
   id            INT UNSIGNED     NOT NULL AUTO_INCREMENT,
@@ -99,15 +86,7 @@ CREATE TABLE habitats (
 
 
 -- ---------------------------------------------------------------------
---  animals : un animal appartient à un et un seul habitat.
---
---  diet est une caractéristique stable de l'animal (carnivore, feuilles…),
---  elle vit donc ici. health_state est en revanche l'état COURANT : il
---  reflète le dernier rapport vétérinaire et sera mis à jour à chaque
---  nouveau compte rendu. C'est un choix assumé de valeur recalculée et
---  stockée, pour éviter une sous-requête sur chaque fiche publique.
---
---  ON DELETE CASCADE : supprimer un habitat supprime ses animaux.
+--  animals : un animal appartient à un seul habitat.
 -- ---------------------------------------------------------------------
 CREATE TABLE animals (
   id           INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -117,9 +96,6 @@ CREATE TABLE animals (
   diet         VARCHAR(150) NULL,
   health_state VARCHAR(100) NULL,
   image        VARCHAR(255) NULL,
-  -- Texte alternatif de la photo : lu par les lecteurs d'écran et affiché
-  -- si l'image ne se charge pas. Stocké en base pour décrire réellement
-  -- chaque cliché plutôt que de générer un libellé automatique.
   image_alt    VARCHAR(255) NULL,
   habitat_id   INT UNSIGNED NOT NULL,
   created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -132,11 +108,6 @@ CREATE TABLE animals (
 
 -- ---------------------------------------------------------------------
 --  veterinary_reports : compte rendu de passage du vétérinaire.
---  Les colonnes suivent l'énoncé : état, nourriture proposée, grammage,
---  date de passage, détail de l'état.
---
---  veterinarian_id n'a PAS de ON DELETE CASCADE : on ne veut pas perdre
---  l'historique médical si un compte est supprimé.
 -- ---------------------------------------------------------------------
 CREATE TABLE veterinary_reports (
   id             INT UNSIGNED      NOT NULL AUTO_INCREMENT,
@@ -178,10 +149,6 @@ CREATE TABLE habitat_comments (
 
 -- ---------------------------------------------------------------------
 --  feedings : saisie quotidienne de l'employé.
---
---  quantity est un DECIMAL et non du texte : cela permet des sommes et
---  des moyennes pour les statistiques du dashboard admin. Stocker
---  « 5 kg » dans une seule colonne texte l'interdirait.
 -- ---------------------------------------------------------------------
 CREATE TABLE feedings (
   id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
@@ -205,8 +172,7 @@ CREATE TABLE feedings (
 
 -- ---------------------------------------------------------------------
 --  reviews : avis déposé par un visiteur, invisible tant qu'un employé
---  ne l'a pas validé. approved_by reste NULL tant que personne n'a
---  tranché, et y revient si le compte du valideur est supprimé.
+--  ne l'a pas validé.
 -- ---------------------------------------------------------------------
 CREATE TABLE reviews (
   id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -246,7 +212,6 @@ CREATE TABLE services (
 
 -- ---------------------------------------------------------------------
 --  service_images : un service possède zéro, une ou plusieurs photos.
---  position sert à les ordonner sans dépendre de l'ordre d'insertion.
 -- ---------------------------------------------------------------------
 CREATE TABLE service_images (
   id         INT UNSIGNED     NOT NULL AUTO_INCREMENT,
@@ -263,7 +228,6 @@ CREATE TABLE service_images (
 
 -- ---------------------------------------------------------------------
 --  contact_messages : demandes envoyées depuis le formulaire de contact.
---  is_read permet de distinguer les messages déjà traités.
 -- ---------------------------------------------------------------------
 CREATE TABLE contact_messages (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,

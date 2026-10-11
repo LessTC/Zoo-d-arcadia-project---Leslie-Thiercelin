@@ -7,16 +7,12 @@ require __DIR__ . '/includes/fonctions.php';
 require __DIR__ . '/includes/courriel.php';
 require __DIR__ . '/includes/messages_contact.php';
 
-// LA BARRIÈRE. Première instruction exécutable de la page, avant le
-// moindre affichage : si la personne n'est pas un administrateur
-// connecté, elle est redirigée ou refusée, et rien ne s'affiche.
+// Sécurité : Première instruction exécutable de la page, avant le
+// moindre affichage -> pas un administrateur = redirigée ou refusée, rien ne s'affiche.
 $utilisateur = exiger_role('Administrateur');
 
 require __DIR__ . '/includes/mongo.php';
 
-// MongoDB ne stocke que des identifiants d'animaux et un nombre de vues.
-// Les noms sont dans MySQL. Les deux bases ne se parlent pas : c'est PHP
-// qui interroge l'une puis l'autre et assemble le résultat.
 $vues = consultations();                     // [id => nombre de vues], déjà trié
 
 $nomsAnimaux = [];
@@ -24,16 +20,12 @@ foreach (db()->query('SELECT id, name FROM animals') as $ligne) {
     $nomsAnimaux[(int) $ligne['id']] = $ligne['name'];
 }
 
-// La fiche la plus consultée sert de référence : sa barre fera 100 %,
-// les autres seront proportionnelles.
+
 $vueMax = $vues ? max($vues) : 0;
 
-// Onglet à rouvrir après chaque action.
 $ongletActif = $_GET['onglet'] ?? 'users';
 
-// Les rôles proposables. L'administrateur ne crée que des employés et des
-// vétérinaires : son propre profil s'obtient en ligne de commande, ce qui
-// évite qu'un compte admin compromis en fabrique d'autres.
+// Les rôles proposables.
 $requete = db()->prepare('SELECT id, label FROM roles WHERE label <> ? ORDER BY id');
 $requete->execute(['Administrateur']);
 $rolesProposables = $requete->fetchAll();
@@ -92,8 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 // US 6 : l'utilisateur reçoit son identifiant par courriel.
-                // Le mot de passe n'y figure JAMAIS : il lui sera remis de
-                // vive voix par l'administrateur.
                 envoyer_courriel(
                     $email,
                     'Votre accès au Zoo d’Arcadia',
@@ -109,7 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: Dashboard_admin.php?onglet=users&user=cree');
                 exit;
             } catch (PDOException $e) {
-                // 23000 = contrainte violée. Ici, l'unicité du courriel.
                 $motif = $e->getCode() === '23000' ? 'doublon' : 'erreur';
                 header('Location: Dashboard_admin.php?onglet=users&user=' . $motif);
                 exit;
@@ -123,8 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'user_actif') {
         $id = (int) ($_POST['user_id'] ?? 0);
 
-        // On ne se désactive pas soi-même : l'administrateur connecté se
-        // couperait l'accès à son propre espace.
+        // Pas de désactivation du compte admin 
         if ($id > 0 && $id !== (int) $utilisateur['id']) {
             $requete = db()->prepare('UPDATE users SET is_active = NOT is_active WHERE id = ?');
             $requete->execute([$id]);
@@ -142,9 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $requete = db()->prepare('DELETE FROM users WHERE id = ?');
                 $requete->execute([$id]);
             } catch (PDOException $e) {
-                // Ce compte a signé des comptes rendus ou des repas : la clé
-                // étrangère refuse la suppression pour ne pas perdre
-                // l'historique. On propose la désactivation à la place.
+                // désactivation de compte plutot que suppression si le compte a crée des comptes-rendus pour garder l'historique
                 header('Location: Dashboard_admin.php?onglet=users&user=lie');
                 exit;
             }
@@ -154,8 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    // Boîte de réception partagée avec l'espace employé : le traitement
-    // vit dans includes/messages_contact.php.
+    // Boîte de réception partagée avec l'espace employé
     traiter_action_message('Dashboard_admin.php');
 
     if ($action === 'animal_enregistrer') {
@@ -214,9 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) ($_POST['animal_id'] ?? 0);
     
         if ($id > 0) {
-            // Les comptes rendus et les repas de cet animal partent avec,
-            // grâce au ON DELETE CASCADE de ces deux tables. Son compteur
-            // MongoDB, lui, subsiste : les deux bases sont indépendantes.
             $requete = db()->prepare('DELETE FROM animals WHERE id = ?');
             $requete->execute([$id]);
         }
@@ -232,7 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $horaires    = trim($_POST['schedule'] ?? '');
         $description = trim($_POST['description'] ?? '');
 
-        // Liste blanche : seules ces deux catégories existent à l'affichage.
         if (!in_array($categorie, ['visite', 'restauration'], true)) {
             $categorie = 'visite';
         }
@@ -242,8 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Le slug sert d'ancre dans l'URL de Services.php : on le fabrique
-        // à partir du nom, sans accents ni caractères spéciaux.
+        // Le slug sert d'ancre dans l'URL de Services.php
         $slug = strtolower(trim(preg_replace(
             '/[^a-z0-9]+/i',
             '-',
@@ -275,7 +255,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) ($_POST['service_id'] ?? 0);
 
         if ($id > 0) {
-            // Les images liées partent avec, grâce au ON DELETE CASCADE.
             $requete = db()->prepare('DELETE FROM services WHERE id = ?');
             $requete->execute([$id]);
         }
@@ -285,9 +264,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // US 6 : « création, mise à jour et suppression » des habitats.
-    // Un seul traitement pour la création et la mise à jour : c'est la
-    // présence d'un identifiant qui distingue les deux cas, exactement
-    // comme pour les services et les animaux plus haut.
     if ($action === 'habitat_enregistrer') {
         $id          = (int) ($_POST['habitat_id'] ?? 0);
         $nom         = trim($_POST['name'] ?? '');
@@ -299,11 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // La table impose un nom unique (UNIQUE KEY uq_habitats_name). Plutôt
-        // que de laisser MySQL lever une exception que l'administrateur ne
-        // comprendrait pas, on vérifie nous-mêmes et on affiche un message
-        // clair. Le « id <> ? » exclut l'habitat en cours de modification,
-        // qui a évidemment le droit de conserver son propre nom.
+        // La table impose un nom unique (UNIQUE KEY uq_habitats_name). 
         $requete = db()->prepare('SELECT id FROM habitats WHERE name = ? AND id <> ?');
         $requete->execute([$nom, $id]);
 
@@ -335,13 +307,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int) ($_POST['habitat_id'] ?? 0);
 
         if ($id > 0) {
-            // La clé étrangère des animaux est en ON DELETE CASCADE : supprimer
-            // un habitat peuplé effacerait au passage ses animaux, leurs comptes
-            // rendus vétérinaires et leurs repas — le tout sur un seul clic.
-            // On refuse donc tant qu'il reste un animal, et on demande à
-            // l'administrateur de les déplacer ou de les supprimer d'abord.
-            // Le garde-fou est côté serveur : une confirmation JavaScript se
-            // contourne, pas une vérification en base.
+            // On refuse la suppression d'habitat tant qu'il reste un animal, et on demande à
+            // l'administrateur de les déplacer ou de les supprimer d'abord.         
             $requete = db()->prepare('SELECT COUNT(*) FROM animals WHERE habitat_id = ?');
             $requete->execute([$id]);
 
@@ -378,8 +345,7 @@ if ($filtreAnimal !== '') {
     $parametresRapports[] = '%' . $filtreAnimal . '%';
 }
 
-// Un champ <input type="date"> renvoie toujours AAAA-MM-JJ. On refuse
-// tout ce qui ne ressemble pas à ça, plutôt que de le transmettre à MySQL.
+// Un champ <input type="date"> renvoie toujours AAAA-MM-JJ. 
 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtreDu)) {
     $conditions[]         = 'r.visit_date >= ?';
     $parametresRapports[] = $filtreDu;
@@ -401,7 +367,6 @@ $requete->execute($parametresRapports);
 $rapports = $requete->fetchAll();
 
 // --- Messages du formulaire de contact -------------------------------
-// Les non-lus remontent en premier, puis les plus récents.
 $messagesContact = messages_contact();
 $nonLus          = messages_non_lus($messagesContact);
 $pageCourante    = 'Dashboard_admin.php';
@@ -416,7 +381,6 @@ $tousLesAnimaux = db()->query(
 
 $tousLesHabitats = db()->query('SELECT id, name FROM habitats ORDER BY name')->fetchAll();
 
-// L'animal en cours d'édition. 0 ou absent = on est en création.
 $animalEdite = null;
 $idAnimal    = (int) ($_GET['animal_id'] ?? 0);
 
@@ -434,7 +398,6 @@ $tousLesServices = db()->query(
     'SELECT id, name, category, schedule FROM services ORDER BY category, id'
 )->fetchAll();
 
-// Le service en cours d'édition. 0 ou absent = on est en création.
 $serviceEdite = null;
 $idService    = (int) ($_GET['service_id'] ?? 0);
 
@@ -450,9 +413,6 @@ if ($idService > 0) {
 $habitatEdite = null;
 $idHabitat    = (int) ($_GET['habitat_id'] ?? 0);
 
-// « habitat_id=0 » n'est pas une erreur : c'est l'entrée « Nouvel habitat »
-// de la liste déroulante. isset() permet de distinguer « le paramètre vaut
-// zéro » de « le paramètre est absent », ce que (int) seul ne sait pas faire.
 $nouvelHabitat = isset($_GET['habitat_id']) && $idHabitat === 0;
 
 if ($idHabitat > 0) {
@@ -818,9 +778,6 @@ require __DIR__ . '/includes/header.php';
                       </form>
 
                       <?php if ($habitatEdite): ?>
-                        <!-- Formulaire séparé : un formulaire ne peut pas en contenir un autre.
-                             Le confirm() n'est qu'un filet de courtoisie, la vraie vérification
-                             (l'habitat est-il vide ?) se fait côté serveur. -->
                         <form action="Dashboard_admin.php" method="post" class="mt-3"
                               onsubmit="return confirm('Supprimer définitivement cet habitat ?');">
                           <input type="hidden" name="habitat_id" value="<?= (int) $habitatEdite['id'] ?>">
@@ -899,10 +856,6 @@ require __DIR__ . '/includes/header.php';
                         <select id="animalState" name="health_state" class="form-select">
                           <?php
                             $etatsPossibles = ['en bonne santé', 'suivi régulier', 'suivi attentif', 'en soins'];
-                            // Un état hors de cette liste (ex. « suivi quotidien », issu du jeu
-                            // de données initial) est ajouté pour être conservé : sans ça, le
-                            // menu sélectionnerait le premier choix et l'enregistrement
-                            // remplacerait l'état en silence.
                             $etatActuel = $animalEdite['health_state'] ?? '';
                             if ($etatActuel !== '' && !in_array($etatActuel, $etatsPossibles, true)) {
                                 $etatsPossibles[] = $etatActuel;
@@ -1082,7 +1035,7 @@ require __DIR__ . '/includes/header.php';
               <?php require __DIR__ . '/includes/panneau_messages.php'; ?>
             </div>
 
-          </div><!-- div qui ferme le /tab-content -->
+          </div>
         </section>
       </div>
     </div>
