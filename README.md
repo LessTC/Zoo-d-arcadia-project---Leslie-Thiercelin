@@ -7,13 +7,13 @@ vétérinaires.
 **Site en ligne** — <https://lesstc.alwaysdata.net/>
 
 **Stack** — PHP 8.2+ (PDO) · MariaDB · MongoDB · Bootstrap 5 · JavaScript sans
-bibliothèque
+bibliothèque · Docker pour l'environnement de développement
 
-Le développement se fait en local sous XAMPP (PHP 8.2, MariaDB 10.4) ; la
-production tourne chez alwaysdata (PHP 8.4, MariaDB 11.4) avec la base NoSQL
-sur un cluster MongoDB Atlas. Les instructions ci-dessous concernent
-l'installation locale ; la démarche de déploiement est décrite dans la
-documentation technique.
+Le développement se fait en local sous XAMPP (PHP 8.2, MariaDB 10.4) ou dans
+des conteneurs Docker ; la production tourne chez alwaysdata (PHP 8.4,
+MariaDB 11.4) avec la base NoSQL sur un cluster MongoDB Atlas. Les instructions
+ci-dessous couvrent les deux installations locales ; la démarche de déploiement
+est décrite dans la documentation technique.
 
 ## Fonctionnalités
 
@@ -28,14 +28,85 @@ documentation technique.
 
 Les livrables du projet sont réunis dans le dossier [`docs/`](docs/) :
 
-| Document                                                                           | Contenu                                                                     |
-| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| [Manuel d'utilisation](docs/Manuel_utilisation_Zoo_Arcadia.pdf)                     | Présentation de l'application et identifiants des trois espaces professionnels |
-| [Charte graphique](docs/Charte_Zoo_Arcadia.pdf)                                     | Palette, typographie, wireframes et maquettes (bureau et mobile)             |
-| [Documentation technique](docs/Documentation_technique_Zoo_Arcadia.pdf)             | Choix technologiques, modèle de données, diagrammes, déploiement             |
-| [Documentation de gestion de projet](docs/Documentation_gestion_de_projet_Zoo_Arcadia.pdf) | Méthode de travail, kanban, déroulé du projet                        |
+| Document                                                                                   | Contenu                                                                        |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| [Manuel d'utilisation](docs/Manuel_utilisation_Zoo_Arcadia.pdf)                            | Présentation de l'application et identifiants des trois espaces professionnels |
+| [Charte graphique](docs/Charte_Zoo_Arcadia.pdf)                                            | Palette, typographie, wireframes et maquettes (bureau et mobile)               |
+| [Documentation technique](docs/Documentation_technique_Zoo_Arcadia.pdf)                    | Choix technologiques, modèle de données, diagrammes, déploiement               |
+| [Documentation de gestion de projet](docs/Documentation_gestion_de_projet_Zoo_Arcadia.pdf) | Méthode de travail, kanban, déroulé du projet                                  |
 
-## Prérequis
+## Démarrage rapide avec Docker
+
+Le projet est livré avec un environnement conteneurisé. C'est le moyen le plus
+rapide de le faire tourner : rien à installer en local, ni PHP, ni base de
+données, ni extension.
+
+| Conteneur | Image            | Rôle                                      |
+| --------- | ---------------- | ----------------------------------------- |
+| `web`     | `php:8.4-apache` | Le site, dans la version de la production |
+| `mariadb` | `mariadb:11.4`   | Base relationnelle                        |
+| `mongo`   | `mongo:8.0`      | Compteur de consultations (US 11)         |
+
+**Prérequis** — [Docker Desktop](https://docs.docker.com/desktop/).
+
+### 1. Préparer les mots de passe
+
+```bash
+cp .env.example .env
+```
+
+Ouvrir `.env` et remplacer les valeurs `a_remplacer`. Ce fichier n'est jamais
+versionné : il contient les mots de passe des conteneurs.
+
+### 2. Lancer
+
+```bash
+docker compose up --build
+```
+
+Le premier lancement prend quelques minutes : téléchargement des images et
+compilation de l'extension MongoDB. Le site répond ensuite sur
+[http://localhost:8080](http://localhost:8080).
+
+La base est créée et peuplée toute seule : MariaDB exécute `sql/01_schema.sql`
+puis `sql/02_donnees.sql` au premier démarrage, sur un volume vide.
+
+### 3. Créer les comptes du back-office
+
+```bash
+docker compose exec web php sql/03_create_user.php
+```
+
+À répéter pour chacun des trois rôles. Le déroulé du script est décrit plus
+bas, à l'étape 4 de l'installation sous XAMPP.
+
+### Arrêter, repartir de zéro
+
+```bash
+docker compose down
+```
+
+```bash
+docker compose down -v
+```
+
+La seconde commande supprime aussi les volumes : les bases sont alors
+recréées et repeuplées au lancement suivant.
+
+### Notes
+
+- **La configuration vient des variables d'environnement**, définies dans
+  `compose.yaml`, avec `config/config.php` en secours. Le même code tourne
+  ainsi sous XAMPP, dans un conteneur et chez l'hébergeur, sans condition
+  d'environnement dans le code applicatif.
+- **Aucun port n'est publié pour les bases** : elles ne sont joignables que
+  depuis le conteneur du site. Pas de conflit avec le MySQL de XAMPP, qui peut
+  continuer de tourner sur le port 3306.
+- **La production n'utilise pas Docker.** Le site déployé tourne sur un
+  hébergement mutualisé classique ; les conteneurs servent au développement et
+  à la démonstration.
+
+## Prérequis pour l'installation sous XAMPP
 
 - **XAMPP** avec PHP 8.2 ou supérieur (Apache et MySQL / MariaDB)
 - **MongoDB Community Server** 6.0 ou supérieur
@@ -45,7 +116,7 @@ Les livrables du projet sont réunis dans le dossier [`docs/`](docs/) :
   `C:\xampp\php\php.ini`, puis **redémarrer Apache** depuis le panneau XAMPP
 - **Git**
 
-## Installation locale
+## Installation locale sous XAMPP
 
 ### 1. Récupérer le projet
 
@@ -139,14 +210,18 @@ mène à la page complète `animal.php`, qui sert la même information.
 
 ## Structure du projet
 
-| Dossier     | Contenu                                                                   |
-| ----------- | ------------------------------------------------------------------------- |
-| `api/`      | Points d'entrée JSON appelés par le JavaScript                            |
-| `config/`   | Paramètres de connexion aux bases                                         |
-| `docs/`     | Livrables du projet en PDF : manuel, charte, documentations               |
-| `images/`   | Photographies du site                                                     |
+| Dossier     | Contenu                                                                     |
+| ----------- | --------------------------------------------------------------------------- |
+| `api/`      | Points d'entrée JSON appelés par le JavaScript                              |
+| `config/`   | Paramètres de connexion aux bases                                           |
+| `docs/`     | Livrables du projet en PDF : manuel, charte, documentations                 |
+| `images/`   | Photographies du site                                                       |
 | `includes/` | Connexion PDO, authentification, accès aux données, en-tête et pied de page |
-| `sql/`      | Scripts de création de la base et d'intégration des données               |
+| `sql/`      | Scripts de création de la base et d'intégration des données                 |
+
+À la racine, trois fichiers décrivent l'environnement conteneurisé :
+`Dockerfile` (l'image PHP et Apache), `compose.yaml` (les trois services et
+leurs volumes) et `.env.example` (le modèle des mots de passe des conteneurs).
 
 ## Licence
 
