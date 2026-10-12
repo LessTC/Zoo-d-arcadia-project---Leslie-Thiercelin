@@ -7,13 +7,9 @@ declare(strict_types=1);
 /** Charge la configuration une seule fois. */
 function mongo_config(): array
 {
-    static $config = null;
+    require_once __DIR__ . '/configuration.php';
 
-    if ($config === null) {
-        $config = require __DIR__ . '/../config/config.php';
-    }
-
-    return $config;
+    return configuration();
 }
 
 /** Une seule connexion pour toute la page, comme pour PDO. */
