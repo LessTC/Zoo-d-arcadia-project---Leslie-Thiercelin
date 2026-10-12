@@ -11,8 +11,9 @@ function db(): PDO
         return $pdo;
     }
 
-    $config = require __DIR__ . '/../config/config.php';
-
+    require_once __DIR__ . '/configuration.php';
+    $config = configuration();
+    
     $dsn = sprintf(
         'mysql:host=%s;port=%d;dbname=%s;charset=%s',
         $config['host'],

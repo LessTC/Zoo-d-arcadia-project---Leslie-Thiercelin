@@ -1,6 +1,8 @@
 # Configuration locale : contient les identifiants de connexion à la base.
 # Le modèle à copier est config/config.exemple.php, lui versionné.
 /config/config.php
+# Mots de passe des conteneurs Docker (modèle versionné : .env.example)
+/.env
 
 # Ancienne version statique et images non optimisées (74 Mo).
 # Les fichiers .html d'origine sont déjà dans l'historique Git, sur la
